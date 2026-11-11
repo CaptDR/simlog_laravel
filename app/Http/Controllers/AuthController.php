@@ -40,4 +40,13 @@ class AuthController extends Controller
 
         return back()->with('error', 'Username atau password salah!')->withInput($request->only('username'));
     }
+
+    /**
+     * Memproses logout dan menghapus session pengguna.
+     */
+    public function logout()
+    {
+        Session::flush();
+        return redirect('/')->with('success', 'Anda telah berhasil keluar.');
+    }
 }
