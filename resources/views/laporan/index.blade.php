@@ -224,9 +224,9 @@
                         <a id="btn-export-excel"
                            href="{{ route('laporan.excel', ['start_date' => $startDate, 'end_date' => $endDate]) }}"
                            class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#107c41] hover:bg-[#0b5c30] text-white rounded-xl font-headline-sm text-headline-sm shadow-md hover:shadow-emerald-600/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
-                           title="Download Laporan dalam Format Excel (.xls)">
+                           title="Download Laporan dalam Format CSV (.csv)">
                             <span class="material-symbols-outlined text-[22px]">table_view</span>
-                            <span>Export Excel</span>
+                            <span>Export CSV / Excel</span>
                         </a>
 
                         {{-- Tombol Cetak Laporan (Oranye) --}}

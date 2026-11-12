@@ -29,21 +29,67 @@ class LaporanController extends Controller
     }
 
     /**
-     * Export laporan mutasi ke format Microsoft Excel (Metode Native Blade to Excel).
-     * Tanpa dependensi pihak ketiga untuk menjaga efisiensi resource server.
+     * Export laporan mutasi ke format CSV (Native PHP Stream).
+     * Menghasilkan Raw Data murni untuk kemudahan analisis (Pivot Table, SUM).
      */
     public function exportExcel(Request $request)
     {
         $data = $this->getLaporanData($request);
 
-        $filename = 'Laporan_Mutasi_BPBD_' . $data['startDate'] . '_sd_' . $data['endDate'] . '.xls';
+        $start_date = $data['startDate'];
+        $end_date   = $data['endDate'];
+        $nama_file  = 'Laporan_Mutasi_BPBD_' . $start_date . '_sd_' . $end_date . '.csv';
 
-        header("Content-Type: application/vnd.ms-excel; charset=utf-8");
-        header("Content-Disposition: attachment; filename={$filename}");
-        header("Pragma: no-cache");
-        header("Expires: 0");
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $nama_file . '"',
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
 
-        return view('laporan.excel', $data);
+        return response()->stream(function () use ($data) {
+            $handle = fopen('php://output', 'w');
+
+            // Baris pertama sebagai Header (Delimiter titik koma ';')
+            fputcsv($handle, [
+                'No',
+                'Kode',
+                'Kategori',
+                'Nama Barang',
+                'Satuan',
+                'Total Masuk',
+                'Total Keluar',
+                'Stok Akhir',
+                'Kondisi',
+            ], ';');
+
+            // Looping data baris per baris (Delimiter titik koma ';')
+            $no = 1;
+            foreach ($data['barang'] as $item) {
+                if ($item->stok_sekarang <= 0) {
+                    $kondisi = 'Habis';
+                } elseif ($item->stok_sekarang <= ($item->stok_minimum ?? 5)) {
+                    $kondisi = 'Menipis';
+                } else {
+                    $kondisi = 'Tersedia';
+                }
+
+                fputcsv($handle, [
+                    $no++,
+                    $item->kode_barang ?? '-',
+                    $item->kategori->nama_kategori ?? 'Umum',
+                    $item->nama_barang,
+                    $item->satuan,
+                    $item->total_masuk,
+                    $item->total_keluar,
+                    $item->stok_sekarang,
+                    $kondisi,
+                ], ';');
+            }
+
+            fclose($handle);
+        }, 200, $headers);
     }
 
     /**
