@@ -290,6 +290,34 @@
                                 @endif
                             </div>
 
+                            {{-- ===== EXPIRE DATE (Otomatis untuk Barang Tertentu) ===== --}}
+                            <div id="expire_date_wrapper" class="md:col-span-2 hidden">
+                                <label for="expire_date" class="form-label">
+                                    Expire Date (Tanggal Kedaluwarsa)
+                                    <span class="text-secondary font-normal normal-case tracking-normal">(Wajib untuk kategori Pangan &amp; Medis)</span>
+                                </label>
+                                <div class="input-icon-wrapper">
+                                    <span class="input-icon material-symbols-outlined">event_busy</span>
+                                    <input
+                                        id="expire_date"
+                                        type="date"
+                                        name="expire_date"
+                                        value="{{ old('expire_date') }}"
+                                        class="form-input {{ $errors->has('expire_date') ? 'is-invalid' : '' }}"
+                                    />
+                                </div>
+                                <p class="mt-1 font-body-sm text-body-sm text-secondary flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">info</span>
+                                    Barang ini memerlukan tanggal kedaluwarsa (Expire Date).
+                                </p>
+                                @error('expire_date')
+                                    <p class="mt-1 font-body-sm text-body-sm text-error flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[14px]">error</span>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
                             {{-- ===== TANGGAL MASUK ===== --}}
                             <div>
                                 <label for="tanggal_masuk" class="form-label">
@@ -479,6 +507,38 @@
                 menu.classList.toggle('flex');
             });
         }
+
+        // Otomatisasi Form Expire Date Berdasarkan Prefix Kode Barang ([PGN- atau [MDS-)
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectBarang = document.getElementById('id_barang');
+            const expireWrapper = document.getElementById('expire_date_wrapper');
+            const expireInput = document.getElementById('expire_date');
+
+            if (selectBarang && expireWrapper) {
+                selectBarang.addEventListener('change', function () {
+                    const selectedText = (this.selectedIndex >= 0 && this.options[this.selectedIndex])
+                        ? this.options[this.selectedIndex].text
+                        : '';
+
+                    if (selectedText.includes('[PGN-') || selectedText.includes('[MDS-')) {
+                        expireWrapper.classList.remove('hidden');
+                    } else {
+                        expireWrapper.classList.add('hidden');
+                        if (expireInput) {
+                            expireInput.value = '';
+                        }
+                    }
+                });
+
+                // Trigger pengecekan saat halaman dimuat (misal jika ada nilai old saat validasi gagal)
+                if (selectBarang.selectedIndex >= 0 && selectBarang.options[selectBarang.selectedIndex]) {
+                    const initialText = selectBarang.options[selectBarang.selectedIndex].text;
+                    if (initialText.includes('[PGN-') || initialText.includes('[MDS-')) {
+                        expireWrapper.classList.remove('hidden');
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>

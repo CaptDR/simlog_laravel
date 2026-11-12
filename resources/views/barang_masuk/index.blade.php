@@ -216,6 +216,12 @@
                                             </td>
                                             <td class="px-space-lg py-space-md font-tabular-data text-tabular-data text-on-surface whitespace-nowrap">
                                                 {{ \Carbon\Carbon::parse($masuk->tanggal_masuk)->translatedFormat('d M Y') }}
+                                                @if ($masuk->expire_date)
+                                                    <p class="font-label-sm text-label-sm text-error mt-0.5 flex items-center gap-1" title="Tanggal Kedaluwarsa">
+                                                        <span class="material-symbols-outlined text-[13px]">event_busy</span>
+                                                        Exp: {{ \Carbon\Carbon::parse($masuk->expire_date)->translatedFormat('d M Y') }}
+                                                    </p>
+                                                @endif
                                             </td>
                                             <td class="px-space-lg py-space-md">
                                                 <p class="font-headline-sm text-headline-sm text-on-surface">

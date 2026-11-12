@@ -28,6 +28,7 @@ class BarangMasuk extends Model
     protected $fillable = [
         'id_barang',
         'tanggal_masuk',
+        'expire_date',
         'jumlah_masuk',
         'sumber_bantuan',
         'bukti_dokumen',

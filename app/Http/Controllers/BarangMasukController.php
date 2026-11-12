@@ -42,6 +42,7 @@ class BarangMasukController extends Controller
         $request->validate([
             'id_barang'      => 'required|integer|exists:tb_barang,id_barang',
             'tanggal_masuk'  => 'required|date',
+            'expire_date'    => 'nullable|date',
             'jumlah_masuk'   => 'required|integer|min:1',
             'sumber_bantuan' => 'required|string|max:100',
             'bukti_dokumen'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
@@ -51,6 +52,7 @@ class BarangMasukController extends Controller
             'id_barang.exists'        => 'Barang yang dipilih tidak valid.',
             'tanggal_masuk.required'  => 'Tanggal masuk wajib diisi.',
             'tanggal_masuk.date'      => 'Format tanggal tidak valid.',
+            'expire_date.date'        => 'Format tanggal kedaluwarsa tidak valid.',
             'jumlah_masuk.required'   => 'Jumlah masuk wajib diisi.',
             'jumlah_masuk.min'        => 'Jumlah masuk minimal 1.',
             'sumber_bantuan.required' => 'Sumber bantuan wajib dipilih.',
@@ -69,6 +71,7 @@ class BarangMasukController extends Controller
         BarangMasuk::create([
             'id_barang'      => $request->id_barang,
             'tanggal_masuk'  => $request->tanggal_masuk,
+            'expire_date'    => $request->expire_date,
             'jumlah_masuk'   => $request->jumlah_masuk,
             'sumber_bantuan' => $request->sumber_bantuan,
             'bukti_dokumen'  => $namaBukti,
