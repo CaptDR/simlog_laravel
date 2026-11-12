@@ -21,7 +21,7 @@
         <div class="h-16 w-full px-gutter flex items-center justify-between">
             <div class="flex items-center gap-space-lg">
                 <a class="flex items-center gap-space-sm decoration-none" href="{{ url('/dashboard') }}">
-                    <span class="material-symbols-outlined text-primary-container text-[26px]"></span>
+                    <span class="material-symbols-outlined text-primary-container text-[26px]">local_shipping</span>
                     <div class="flex flex-col">
                         <span class="font-headline-sm text-headline-sm text-primary-container uppercase tracking-tight">SIMLOG BPBD</span>
                         <span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">BPBD Kota Cirebon</span>
