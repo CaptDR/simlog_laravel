@@ -1,343 +1,377 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Data Barang - SIMLOG BPBD Kota Cirebon</title>
-    <meta name="description" content="Manajemen data barang logistik BPBD Kota Cirebon - daftar, tambah, edit, dan hapus data barang."/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
-    <style>
-        @layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}
-    </style>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script id="tailwind-config">
-        tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-fixed":"#ffdbcc","inverse-primary":"#ffb694","on-secondary-container":"#656464","error":"#ba1a1a","surface":"#fcf9f8","inverse-surface":"#303030","tertiary-fixed":"#ffdbca","inverse-on-surface":"#f3f0ef","on-secondary-fixed-variant":"#474646","outline":"#8e7164","on-tertiary-container":"#542200","on-primary":"#ffffff","surface-container-highest":"#e5e2e1","on-surface":"#1b1b1c","on-error-container":"#93000a","surface-container-lowest":"#ffffff","tertiary-fixed-dim":"#ffb68e","on-primary-container":"#571f00","surface-bright":"#fcf9f8","background":"#fcf9f8","tertiary-container":"#f57310","on-surface-variant":"#5a4136","secondary-fixed-dim":"#c8c6c5","secondary":"#5f5e5e","secondary-fixed":"#e5e2e1","tertiary":"#9c4500","surface-variant":"#e5e2e1","on-primary-fixed-variant":"#7b2f00","surface-container-high":"#eae7e7","on-secondary":"#ffffff","on-background":"#1b1b1c","on-tertiary-fixed":"#331200","surface-container":"#f0eded","on-tertiary":"#ffffff","primary":"#a14000","primary-fixed-dim":"#ffb694","on-tertiary-fixed-variant":"#773300","surface-container-low":"#f6f3f2","primary-container":"#ff6a00","error-container":"#ffdad6","secondary-container":"#e5e2e1","on-error":"#ffffff","outline-variant":"#e2bfb0","surface-tint":"#a14000","on-primary-fixed":"#351000","on-secondary-fixed":"#1c1b1b","surface-dim":"#dcd9d9"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"gutter-sm":"1rem","margin":"2rem","space-xl":"2rem","margin-mobile":"1rem","gutter":"1.5rem","space-2xl":"3rem","space-xs":"0.25rem","space-sm":"0.5rem","space-lg":"1.5rem","space-md":"1rem"},fontFamily:{"headline-sm":["Inter"],"label-md":["Inter"],"tabular-data":["Inter"],"body-sm":["Inter"],"body-lg":["Inter"],"headline-md":["Inter"],"label-sm":["Inter"],"headline-xl":["Inter"],"headline-lg":["Inter"],"body-md":["Inter"],"headline-xl-mobile":["Inter"]},fontSize:{"headline-sm":["16px",{lineHeight:"24px",letterSpacing:"0em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.04em",fontWeight:"600"}],"tabular-data":["13px",{lineHeight:"18px",letterSpacing:"-0.01em",fontWeight:"500"}],"body-sm":["13px",{lineHeight:"18px",letterSpacing:"0.005em",fontWeight:"400"}],"body-lg":["16px",{lineHeight:"24px",letterSpacing:"0em",fontWeight:"400"}],"headline-md":["20px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.05em",fontWeight:"700"}],"headline-xl":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-lg":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"700"}],"body-md":["14px",{lineHeight:"20px",letterSpacing:"0em",fontWeight:"400"}],"headline-xl-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}]}}}};
-    </script>
-</head>
-<body class="bg-background font-body-md text-on-surface antialiased min-h-screen flex flex-col">
+@extends('layouts.app')
 
-    <!-- Navbar -->
-    <header class="fixed top-0 left-0 w-full z-50 bg-[#111111]">
-        <div class="h-16 w-full px-gutter flex items-center justify-between">
-            <div class="flex items-center gap-space-lg">
-                <a class="flex items-center gap-space-sm decoration-none" href="{{ url('/dashboard') }}">
-                    <span class="material-symbols-outlined text-primary-container text-[26px]">local_shipping</span>
-                    <div class="flex flex-col">
-                        <span class="font-headline-sm text-headline-sm text-primary-container uppercase tracking-tight">SIMLOG BPBD</span>
-                        <span class="font-label-sm text-label-sm text-secondary-fixed-dim uppercase tracking-wider">BPBD Kota Cirebon</span>
-                    </div>
-                </a>
-                <div class="h-6 w-[1px] bg-[#2a2a2a] hidden lg:block"></div>
-                <nav class="hidden lg:flex items-center gap-space-xs">
-                    <a class="px-space-md py-space-xs rounded font-body-md text-body-md text-secondary-fixed-dim hover:text-surface hover:bg-[#1f1f1f]" href="{{ url('/dashboard') }}">Dashboard</a>
-                    <a class="px-space-md py-space-xs rounded bg-primary-container text-on-primary font-headline-sm" href="{{ route('barang.index') }}">Data Barang</a>
-                    <a class="px-space-md py-space-xs rounded font-body-md text-body-md text-secondary-fixed-dim hover:text-surface hover:bg-[#1f1f1f]" href="{{ url('/barang-masuk') }}">Barang Masuk</a>
-                    <a class="px-space-md py-space-xs rounded font-body-md text-body-md text-secondary-fixed-dim hover:text-surface hover:bg-[#1f1f1f]" href="{{ url('/barang-keluar') }}">Barang Keluar</a>
-                    <a class="px-space-md py-space-xs rounded font-body-md text-body-md text-secondary-fixed-dim hover:text-surface hover:bg-[#1f1f1f]" href="{{ route('laporan.index') }}">Laporan</a>
-                </nav>
-            </div>
-            <div class="flex items-center gap-space-md">
-                <div class="hidden md:flex items-center gap-space-sm bg-[#1c1c1c] py-space-xs px-space-md rounded-full">
-                    <span class="material-symbols-outlined text-primary-container text-[18px]">badge</span>
-                    <span class="font-label-md text-label-md text-surface">{{ session('nama_lengkap', 'User') }}</span>
-                    <span class="font-label-sm text-label-sm text-secondary-fixed-dim font-medium">
-                        @if (strtolower(session('role')) == 'admin')
-                            Petugas Logistik
-                        @elseif (strtolower(session('role')) == 'kasie')
-                            Kepala Seksi Darlog
-                        @elseif (strtolower(session('role')) == 'kalak')
-                            Kepala Pelaksana BPBD
-                        @else
-                            Pengguna Sistem
-                        @endif
-                    </span>
-                </div>
-                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                    <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
-                </div>
-                <a class="inline-flex items-center gap-space-xs bg-error hover:bg-[#a11515] text-on-error px-space-md py-space-xs rounded font-label-md text-label-md transition-colors" href="{{ url('/logout') }}">
-                    <span class="material-symbols-outlined text-[16px]">logout</span>
-                    <span>Keluar</span>
-                </a>
-                <!-- Tombol Garis Tiga Khusus HP -->
-                <button id="tombol-menu-hp" class="lg:hidden flex items-center justify-center p-2 text-surface hover:text-primary-container ml-2">
-                    <span class="material-symbols-outlined text-[28px]">menu</span>
-                </button>
+@section('title', 'Data Barang Logistik')
+
+@section('content')
+    @php
+        $userRole = strtolower(auth()->user()->role ?? session('role', ''));
+        $canManageBarang = in_array($userRole, ['superadmin', 'logistik']);
+    @endphp
+
+    <!-- Operational Status Bar -->
+    <section class="bg-[#0F172A] text-surface rounded-xl p-space-md shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#EA580C]"></div>
+        <div class="flex items-center gap-space-sm pl-space-xs">
+            <span class="inline-flex relative h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#EA580C] opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-[#EA580C]"></span>
+            </span>
+            <div class="flex flex-wrap items-center gap-x-space-sm gap-y-1">
+                <span class="font-label-sm text-label-sm uppercase tracking-wider text-[#EA580C] bg-[#EA580C]/20 px-2 py-0.5 rounded">Gudang Utama</span>
+                <span class="font-headline-sm text-headline-sm text-surface font-bold tracking-tight">MANAJEMEN INVENTARIS BARANG &amp; PERALATAN LOGISTIK</span>
             </div>
         </div>
+        <span class="font-label-sm text-label-sm text-secondary-fixed-dim pl-space-xs md:pl-0">
+            Total Item: <strong class="text-[#EA580C]">{{ $barangs->count() }} Barang</strong>
+        </span>
+    </section>
+
+    <!-- Header Area -->
+    <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm border border-slate-200/60">
+        <div class="space-y-space-xs">
+            <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-secondary font-label-md text-label-md">
+                <a href="{{ url('/dashboard') }}" class="hover:text-on-surface cursor-pointer">Beranda</a>
+                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                <span class="text-on-surface font-semibold">Data Barang</span>
+            </nav>
+            <div>
+                <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">
+                    Data <span class="text-[#EA580C]">Barang Logistik</span>
+                </h1>
+                <div class="h-1 w-[90px] bg-[#EA580C] rounded-full mt-2"></div>
+            </div>
+            <p class="font-body-md text-body-md text-secondary max-w-2xl pt-1">
+                Daftar master inventaris bantuan logistik dan peralatan kebencanaan BPBD Kota Cirebon beserta pantauan kondisi fisik dan ketersediaan stok.
+            </p>
+        </div>
+        @if ($canManageBarang)
+            <a id="btn-tambah-barang" href="{{ route('barang.create') }}"
+               class="inline-flex items-center gap-space-xs bg-[#EA580C] hover:bg-[#C2410C] text-on-primary px-space-lg py-space-sm rounded-xl font-headline-sm text-headline-sm transition-colors shadow-md whitespace-nowrap self-start lg:self-auto">
+                <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                Tambah Barang Baru
+            </a>
+        @endif
     </header>
-<!-- Kotak Menu Khusus HP (Awalnya disembunyikan) -->
-    <div id="menu-hp" class="hidden fixed top-16 left-0 w-full bg-[#111111] z-40 border-t border-[#2a2a2a] shadow-lg flex-col">
-        <a class="px-6 py-4 text-surface hover:bg-[#1f1f1f] border-b border-[#2a2a2a]" href="{{ url('/dashboard') }}">Dashboard</a>
-        <a class="px-6 py-4 text-primary-container hover:bg-[#1f1f1f] border-b border-[#2a2a2a] font-bold" href="{{ route('barang.index') }}">Data Barang</a>
-        <a class="px-6 py-4 text-surface hover:bg-[#1f1f1f] border-b border-[#2a2a2a]" href="{{ route('barang-masuk.index') }}">Barang Masuk</a>
-        <a class="px-6 py-4 text-surface hover:bg-[#1f1f1f] border-b border-[#2a2a2a]" href="{{ route('barang-keluar.index') }}">Barang Keluar</a>
-        <a class="px-6 py-4 text-surface hover:bg-[#1f1f1f]" href="{{ route('laporan.index') }}">Laporan Bulanan</a>
-    </div>
-    <!-- Main Content -->
-    <main class="w-full pt-16 flex-1 bg-background">
-        <div class="flex flex-col w-full">
-            <div class="w-full px-gutter-sm lg:px-gutter py-space-lg max-w-[1440px] mx-auto space-y-space-lg">
 
-                <!-- Operational Status Bar -->
-                <section class="bg-[#111111] text-surface rounded-xl p-space-md shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm relative overflow-hidden">
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
-                    <div class="flex items-center gap-space-sm pl-space-xs">
-                        <span class="inline-flex relative flex h-3 w-3">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-primary-container"></span>
-                        </span>
-                        <div class="flex flex-wrap items-center gap-x-space-sm gap-y-1">
-                            <span class="font-label-sm text-label-sm uppercase tracking-wider text-primary-container bg-primary-container/20 px-2 py-0.5 rounded">Gudang Utama</span>
-                            <span class="font-headline-sm text-headline-sm text-surface font-bold tracking-tight">MANAJEMEN DATA BARANG LOGISTIK</span>
-                        </div>
-                    </div>
-                    <span class="font-label-sm text-label-sm text-secondary-fixed-dim pl-space-xs md:pl-0">
-                        Total: <strong class="text-primary-container">{{ $barangs->count() }} Jenis Barang</strong>
-                    </span>
-                </section>
+    <!-- Flash Message Success -->
+    @if (session('success'))
+        <div id="alert-success" class="flex items-center gap-space-sm bg-[#d1fae5] border border-[#10b981] text-[#065f46] px-space-lg py-space-md rounded-xl shadow-sm">
+            <span class="material-symbols-outlined text-[20px] text-[#10b981]">check_circle</span>
+            <span class="font-body-md text-body-md font-medium">{{ session('success') }}</span>
+        </div>
+    @endif
 
-                <!-- Header Area -->
-                <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
-                    <div class="space-y-space-xs">
-                        <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-secondary font-label-md text-label-md">
-                            <a href="{{ url('/dashboard') }}" class="hover:text-on-surface cursor-pointer">Beranda</a>
-                            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                            <span class="text-on-surface font-semibold">Data Barang</span>
-                        </nav>
-                        <div>
-                            <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">
-                                Daftar <span class="text-primary-container">Data Barang</span>
-                            </h1>
-                            <div class="h-1 w-[90px] bg-primary-container rounded-full mt-2"></div>
-                        </div>
-                        <p class="font-body-md text-body-md text-secondary max-w-2xl pt-1">
-                            Kelola seluruh data barang logistik bencana — tambah, edit, dan hapus sesuai kebutuhan operasional.
-                        </p>
-                    </div>
-                    @if (strtolower(session('role')) == 'admin')
-                    <!-- Tombol Tambah Barang -->
-                    <a id="btn-tambah-barang" href="{{ route('barang.create') }}"
-                       class="inline-flex items-center gap-space-xs bg-primary-container hover:bg-[#e05500] text-on-primary px-space-lg py-space-sm rounded-xl font-headline-sm text-headline-sm transition-colors shadow-md whitespace-nowrap self-start lg:self-auto">
-                        <span class="material-symbols-outlined text-[20px]">add_circle</span>
-                        Tambah Barang
-                    </a>
-                    @endif
-                </header>
+    <!-- Flash Message Error -->
+    @if (session('error'))
+        <div id="alert-error" class="flex items-center gap-space-sm bg-error-container border border-error text-on-error-container px-space-lg py-space-md rounded-xl shadow-sm">
+            <span class="material-symbols-outlined text-[20px] text-error">error</span>
+            <span class="font-body-md text-body-md font-medium">{{ session('error') }}</span>
+        </div>
+    @endif
 
-                <!-- Flash Message Success -->
-                @if (session('success'))
-                    <div id="alert-success" class="flex items-center gap-space-sm bg-[#d1fae5] border border-[#10b981] text-[#065f46] px-space-lg py-space-md rounded-xl shadow-sm">
-                        <span class="material-symbols-outlined text-[20px] text-[#10b981]">check_circle</span>
-                        <span class="font-body-md text-body-md">{{ session('success') }}</span>
-                    </div>
-                @endif
-
-                <!-- Flash Message Error -->
-                @if (session('error'))
-                    <div id="alert-error" class="flex items-center gap-space-sm bg-error-container border border-error text-on-error-container px-space-lg py-space-md rounded-xl shadow-sm">
-                        <span class="material-symbols-outlined text-[20px] text-error">error</span>
-                        <span class="font-body-md text-body-md">{{ session('error') }}</span>
-                    </div>
-                @endif
-
-                <!-- Tabel Data Barang -->
-                <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
-                    <!-- Search Bar -->
-                    <div class="p-space-lg border-b border-outline-variant flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
-                        <span class="font-headline-sm text-headline-sm text-on-surface">Inventaris Barang</span>
-                        <div class="flex items-center gap-space-sm bg-surface-container rounded-lg px-space-md py-space-xs border border-outline-variant w-full sm:w-auto">
-                            <span class="material-symbols-outlined text-secondary text-[18px]">search</span>
-                            <input id="searchInput" type="text" placeholder="Cari nama atau kode barang..."
-                                   class="bg-transparent outline-none font-body-md text-body-md text-on-surface placeholder-secondary w-full sm:w-64"/>
-                        </div>
-                    </div>
-
-                    <!-- Tabel -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="bg-surface-container border-b border-outline-variant">
-                                    <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">No</th>
-                                    <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Kode</th>
-                                    <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Nama Barang</th>
-                                    <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Kategori</th>
-                                    <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Satuan</th>
-                                    <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Stok Sekarang</th>
-                                    <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Stok Min.</th>
-                                    <th class="text-center px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBodyBarang">
-                                @forelse ($barangs as $index => $barang)
-                                    <tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors barang-row">
-
-                                        {{-- Nomor urut --}}
-                                        <td class="px-space-lg py-space-md font-tabular-data text-tabular-data text-secondary whitespace-nowrap">
-                                            {{ $index + 1 }}
-                                        </td>
-
-                                        {{-- Kode Barang --}}
-                                        <td class="px-space-lg py-space-md whitespace-nowrap">
-                                            <code class="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded font-tabular-data text-tabular-data">
-                                                {{ $barang->kode_barang }}
-                                            </code>
-                                        </td>
-
-                                        {{-- Nama Barang --}}
-                                        <td class="px-space-lg py-space-md">
-                                            <div class="flex items-center gap-space-sm">
-                                                <span class="material-symbols-outlined text-primary-container text-[18px]">inventory_2</span>
-                                                <span class="font-body-md text-body-md text-on-surface font-semibold">{{ $barang->nama_barang }}</span>
-                                            </div>
-                                        </td>
-
-                                        {{-- Nama Kategori (dari relasi belongsTo) --}}
-                                        <td class="px-space-lg py-space-md whitespace-nowrap">
-                                            @if ($barang->kategori)
-                                                <span class="inline-flex items-center gap-1 bg-primary-container/10 text-primary-container border border-primary-container/30 px-2 py-0.5 rounded font-label-md text-label-md uppercase tracking-wider">
-                                                    {{ $barang->kategori->nama_kategori }}
-                                                </span>
-                                            @else
-                                                <span class="text-secondary font-body-sm text-body-sm italic">—</span>
-                                            @endif
-                                        </td>
-
-                                        {{-- Satuan --}}
-                                        <td class="px-space-lg py-space-md font-body-sm text-body-sm text-secondary whitespace-nowrap">
-                                            {{ $barang->satuan }}
-                                        </td>
-
-                                        {{-- Stok Sekarang dengan badge warna --}}
-                                        <td class="px-space-lg py-space-md whitespace-nowrap">
-                                            @if ($barang->stok_sekarang <= $barang->stok_minimum)
-                                                <span class="inline-flex items-center gap-1 bg-error/10 text-error border border-error/30 px-space-sm py-0.5 rounded font-headline-sm text-headline-sm">
-                                                    <span class="material-symbols-outlined text-[14px]">warning</span>
-                                                    {{ number_format($barang->stok_sekarang) }}
-                                                </span>
-                                            @elseif ($barang->stok_sekarang <= ($barang->stok_minimum * 2))
-                                                <span class="inline-flex items-center gap-1 bg-[#fef3c7] text-[#92400e] border border-[#f59e0b]/30 px-space-sm py-0.5 rounded font-headline-sm text-headline-sm">
-                                                    {{ number_format($barang->stok_sekarang) }}
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center gap-1 bg-[#d1fae5] text-[#065f46] border border-[#10b981]/30 px-space-sm py-0.5 rounded font-headline-sm text-headline-sm">
-                                                    {{ number_format($barang->stok_sekarang) }}
-                                                </span>
-                                            @endif
-                                        </td>
-
-                                        {{-- Stok Minimum --}}
-                                        <td class="px-space-lg py-space-md font-tabular-data text-tabular-data text-secondary whitespace-nowrap">
-                                            {{ number_format($barang->stok_minimum) }}
-                                        </td>
-
-                                        {{-- Aksi: Edit & Hapus --}}
-                                        <td class="px-space-lg py-space-md whitespace-nowrap text-center">
-                                            @if (strtolower(session('role')) == 'admin')
-                                            <div class="flex items-center justify-center gap-space-xs">
-                                                <!-- Tombol Edit -->
-                                                <a id="btn-edit-barang-{{ $barang->id_barang }}"
-                                                   href="{{ route('barang.edit', $barang->id_barang) }}"
-                                                   class="inline-flex items-center gap-1 bg-[#1d4ed8] hover:bg-[#1e40af] text-white px-space-sm py-1 rounded font-label-md text-label-md transition-colors"
-                                                   title="Edit Barang">
-                                                    <span class="material-symbols-outlined text-[14px]">edit</span>
-                                                    Edit
-                                                </a>
-                                                <!-- Tombol Hapus -->
-                                                <form id="form-hapus-{{ $barang->id_barang }}"
-                                                      action="{{ route('barang.destroy', $barang->id_barang) }}"
-                                                      method="POST"
-                                                      onsubmit="return confirm('Yakin ingin menghapus barang \'{{ addslashes($barang->nama_barang) }}\'?\nTindakan ini tidak dapat dibatalkan.');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button id="btn-hapus-{{ $barang->id_barang }}"
-                                                            type="submit"
-                                                            class="inline-flex items-center gap-1 bg-error hover:bg-[#a11515] text-on-error px-space-sm py-1 rounded font-label-md text-label-md transition-colors"
-                                                            title="Hapus Barang">
-                                                        <span class="material-symbols-outlined text-[14px]">delete</span>
-                                                        Hapus
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            @else
-                                            <span class="text-xs text-secondary italic">Hanya Lihat</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="px-space-lg py-[60px] text-center">
-                                            <div class="flex flex-col items-center gap-space-md text-secondary">
-                                                <span class="material-symbols-outlined text-[48px] text-outline-variant">inventory_2</span>
-                                                <p class="font-body-md text-body-md">Belum ada data barang.</p>
-                                                @if (strtolower(session('role')) == 'admin')
-                                                <a href="{{ route('barang.create') }}"
-                                                   class="inline-flex items-center gap-1 bg-primary-container text-on-primary px-space-lg py-space-sm rounded-xl font-headline-sm text-headline-sm hover:bg-[#e05500] transition-colors">
-                                                    <span class="material-symbols-outlined text-[16px]">add_circle</span>
-                                                    Tambah Barang Pertama
-                                                </a>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Footer Tabel -->
-                    @if ($barangs->count() > 0)
-                    <div class="px-space-lg py-space-md border-t border-outline-variant flex items-center justify-between">
-                        <span class="font-body-sm text-body-sm text-secondary">
-                            Menampilkan <strong class="text-on-surface">{{ $barangs->count() }}</strong> data barang
-                        </span>
-                    </div>
-                    @endif
-                </section>
-
+    @if ($errors->any())
+        <div class="bg-error-container border border-error/30 rounded-xl p-space-md">
+            <div class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-error text-[20px]">error</span>
+                <ul class="list-disc list-inside text-xs sm:text-sm text-on-error-container">
+                    @foreach ($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
             </div>
         </div>
-    </main>
+    @endif
 
-    <!-- Footer -->
-    <footer class="w-full bg-[#111111] py-space-lg text-center mt-auto">
-        <div class="w-full px-gutter flex flex-col sm:flex-row items-center justify-between gap-space-sm">
-            <span class="font-label-md text-label-md text-secondary-fixed-dim">&copy; 2026 BPBD Kota Cirebon - Sistem Informasi Manajemen Logistik &amp; Inventaris Bencana</span>
-            <div class="flex items-center gap-space-md font-label-sm text-label-sm text-secondary-fixed-dim">
-                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#10b981]"></span>POSKO INDUK AKTIF</span>
-                <span>VERSI SISTEM 2.4-PROD</span>
+    <!-- Panel Import Excel (.xlsx) dengan Dropdown Kategori (Khusus Superadmin & Logistik) -->
+    @if ($canManageBarang)
+        <div class="bg-surface-container-lowest p-space-md lg:p-space-lg rounded-xl shadow-sm border border-slate-200/70 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-md">
+            <div class="flex items-center gap-space-sm">
+                <div class="w-11 h-11 rounded-xl bg-[#107c41]/10 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[#107c41] text-[24px]">table_view</span>
+                </div>
+                <div>
+                    <span class="font-headline-sm text-headline-sm text-on-surface block">Import Data Barang via Excel (.xlsx)</span>
+                    <span class="font-body-sm text-body-sm text-secondary">Template dilengkapi Dropdown Kategori &amp; Kondisi otomatis serta proteksi Anti-Duplikasi.</span>
+                </div>
+            </div>
+
+            <form action="{{ route('barang.import-xlsx') }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-center gap-space-sm w-full lg:w-auto">
+                @csrf
+                <a href="{{ route('barang.template-xlsx') }}"
+                   class="inline-flex items-center gap-1.5 px-space-md py-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface rounded-lg font-label-md text-label-md transition-colors"
+                   title="Unduh Template Excel (.xlsx) dengan Dropdown Kategori">
+                    <span class="material-symbols-outlined text-[18px] text-[#107c41]">download</span>
+                    <span>Download Template (.xlsx)</span>
+                </a>
+
+                <div class="relative flex-1 sm:flex-initial">
+                    <input type="file" name="file_import" accept=".xlsx,.xls" required
+                           class="text-xs text-secondary file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-surface-container file:text-on-surface hover:file:bg-surface-container-high file:cursor-pointer cursor-pointer border border-outline-variant rounded-lg p-1 bg-surface-container-lowest w-full sm:w-auto"/>
+                </div>
+
+                <button type="submit"
+                        class="inline-flex items-center gap-1.5 px-space-md py-2 bg-[#107c41] hover:bg-[#0b5c30] text-white rounded-lg font-headline-sm text-label-md shadow transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">publish</span>
+                    <span>Import Excel</span>
+                </button>
+            </form>
+        </div>
+    @endif
+
+    <!-- Tabel Data Barang & Filter Bar -->
+    <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-slate-200/70">
+        <!-- Filter Bar: Kategori, Kondisi, & Pencarian -->
+        <div class="p-space-lg border-b border-outline-variant bg-slate-50/50 space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#EA580C] text-[22px]">inventory_2</span>
+                    <span class="font-headline-sm text-headline-sm text-on-surface">Daftar Inventaris Barang</span>
+                </div>
+
+                <!-- Filter Dropdown Kategori, Kondisi, & Input Cari -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
+                    <!-- Filter Kategori -->
+                    <div class="relative">
+                        <select id="filterKategori" class="w-full bg-white border border-outline-variant rounded-lg pl-3 pr-8 py-2 text-xs sm:text-sm font-medium text-on-surface outline-none focus:border-[#EA580C]">
+                            <option value="">— Semua Kategori —</option>
+                            @foreach ($kategoris as $kat)
+                                <option value="{{ strtolower($kat->nama_kategori) }}" {{ request('id_kategori') == $kat->id_kategori ? 'selected' : '' }}>
+                                    {{ $kat->nama_kategori }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Filter Kondisi -->
+                    <div class="relative">
+                        <select id="filterKondisi" class="w-full bg-white border border-outline-variant rounded-lg pl-3 pr-8 py-2 text-xs sm:text-sm font-medium text-on-surface outline-none focus:border-[#EA580C]">
+                            <option value="">— Semua Kondisi —</option>
+                            <option value="baik" {{ strtolower(request('kondisi', '')) === 'baik' ? 'selected' : '' }}>Baik</option>
+                            <option value="rusak ringan" {{ strtolower(request('kondisi', '')) === 'rusak ringan' ? 'selected' : '' }}>Rusak Ringan</option>
+                            <option value="dalam perbaikan" {{ strtolower(request('kondisi', '')) === 'dalam perbaikan' ? 'selected' : '' }}>Dalam Perbaikan</option>
+                            <option value="rusak berat" {{ strtolower(request('kondisi', '')) === 'rusak berat' ? 'selected' : '' }}>Rusak Berat</option>
+                        </select>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-outline-variant">
+                        <span class="material-symbols-outlined text-secondary text-[18px]">search</span>
+                        <input id="searchInput" type="text" placeholder="Cari nama atau merk barang..."
+                               class="bg-transparent outline-none text-xs sm:text-sm text-on-surface placeholder-secondary w-full"/>
+                    </div>
+                </div>
             </div>
         </div>
-    </footer>
-<!-- Nyawa untuk menu HP -->
+
+        <!-- Tabel -->
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-surface-container border-b border-outline-variant">
+                        <th class="text-left px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">No</th>
+                        <th class="text-center px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Foto</th>
+                        <th class="text-left px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider">Nama Barang &amp; Merk</th>
+                        <th class="text-left px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Kategori</th>
+                        <th class="text-center px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Kondisi</th>
+                        <th class="text-center px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Stok Saat Ini</th>
+                        <th class="text-center px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Status</th>
+                        <th class="text-center px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-outline-variant">
+                    @forelse ($barangs as $index => $barang)
+                        @php
+                            $kondisiVal = $barang->kondisi ?? 'Baik';
+                            $kondisiBadge = match($kondisiVal) {
+                                'Baik'            => 'bg-emerald-100 text-emerald-800 border border-emerald-300',
+                                'Rusak Ringan'    => 'bg-amber-100 text-amber-800 border border-amber-300',
+                                'Dalam Perbaikan' => 'bg-blue-100 text-blue-800 border border-blue-300',
+                                'Rusak Berat'     => 'bg-red-100 text-red-800 border border-red-300',
+                                default           => 'bg-emerald-100 text-emerald-800 border border-emerald-300',
+                            };
+                            $katNama = $barang->kategori->nama_kategori ?? 'Umum';
+                            $isActive = $barang->is_active ?? true;
+                        @endphp
+                        <tr class="hover:bg-surface-container-low transition-colors barang-row {{ !$isActive ? 'opacity-60 bg-slate-50' : '' }}"
+                            data-kategori="{{ strtolower($katNama) }}"
+                            data-kondisi="{{ strtolower($kondisiVal) }}">
+                            <td class="px-space-md py-space-md font-tabular-data text-tabular-data text-secondary whitespace-nowrap">
+                                {{ $index + 1 }}
+                            </td>
+
+                            <!-- Thumbnail Foto Barang -->
+                            <td class="px-space-md py-space-md text-center whitespace-nowrap">
+                                @if ($barang->gambar && file_exists(public_path('uploads/barang/' . $barang->gambar)))
+                                    <a href="{{ asset('uploads/barang/' . $barang->gambar) }}" target="_blank" class="inline-block group" title="Klik untuk memperbesar foto">
+                                        <img src="{{ asset('uploads/barang/' . $barang->gambar) }}"
+                                             alt="{{ $barang->nama_barang }}"
+                                             class="w-12 h-12 rounded-xl object-cover border border-slate-200 shadow-xs group-hover:scale-105 transition-transform mx-auto"/>
+                                    </a>
+                                @else
+                                    <div class="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center justify-center text-slate-400 mx-auto" title="Belum ada foto">
+                                        <span class="material-symbols-outlined text-[22px]">image</span>
+                                    </div>
+                                @endif
+                            </td>
+
+                            <!-- Nama Barang, Kode & Merk -->
+                            <td class="px-space-md py-space-md">
+                                <div class="font-bold text-slate-900 text-sm">{{ $barang->nama_barang }}</div>
+                                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs text-secondary">
+                                    <span class="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-[11px] text-slate-600">{{ $barang->kode_barang }}</span>
+                                    @if ($barang->merk)
+                                        <span>· Merk: <strong class="text-slate-700">{{ $barang->merk }}</strong></span>
+                                    @endif
+                                </div>
+                            </td>
+
+                            <!-- Kategori -->
+                            <td class="px-space-md py-space-md whitespace-nowrap">
+                                <span class="px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed-variant">
+                                    {{ $katNama }}
+                                </span>
+                            </td>
+
+                            <!-- Kondisi Barang -->
+                            <td class="px-space-md py-space-md text-center whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold {{ $kondisiBadge }}">
+                                    {{ $kondisiVal }}
+                                </span>
+                            </td>
+
+                            <!-- Stok Sekarang & Satuan -->
+                            <td class="px-space-md py-space-md text-center font-tabular-data text-tabular-data whitespace-nowrap">
+                                @if ($barang->stok_sekarang <= $barang->stok_minimum)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-bold text-xs" title="Stok di bawah batas minimum ({{ $barang->stok_minimum }})">
+                                        <span class="material-symbols-outlined text-[14px]">warning</span>
+                                        {{ number_format($barang->stok_sekarang) }} {{ $barang->satuan }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#d1fae5] text-[#065f46] font-bold text-xs">
+                                        <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                        {{ number_format($barang->stok_sekarang) }} {{ $barang->satuan }}
+                                    </span>
+                                @endif
+                            </td>
+
+                            <!-- Status Aktif -->
+                            <td class="px-space-md py-space-md text-center whitespace-nowrap">
+                                @if ($isActive)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        Aktif
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700">
+                                        Nonaktif
+                                    </span>
+                                @endif
+                            </td>
+
+                            <!-- Aksi -->
+                            <td class="px-space-md py-space-md whitespace-nowrap text-center">
+                                @if ($canManageBarang)
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <a id="btn-edit-barang-{{ $barang->id_barang }}"
+                                           href="{{ route('barang.edit', $barang->id_barang) }}"
+                                           class="inline-flex items-center gap-1 bg-[#1d4ed8] hover:bg-[#1e40af] text-white px-2.5 py-1.5 rounded-lg font-label-md text-label-md transition-colors"
+                                           title="Edit Barang">
+                                            <span class="material-symbols-outlined text-[15px]">edit</span>
+                                            <span>Edit</span>
+                                        </a>
+                                        <form id="form-hapus-{{ $barang->id_barang }}"
+                                              action="{{ route('barang.destroy', $barang->id_barang) }}"
+                                              method="POST"
+                                              onsubmit="return confirm('Yakin ingin menghapus barang \'{{ addslashes($barang->nama_barang) }}\'?\nJika barang sudah memiliki riwayat transaksi, sistem akan menolak penghapusan permanen.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button id="btn-hapus-{{ $barang->id_barang }}"
+                                                    type="submit"
+                                                    class="inline-flex items-center gap-1 bg-error hover:bg-[#a11515] text-on-error px-2.5 py-1.5 rounded-lg font-label-md text-label-md transition-colors"
+                                                    title="Hapus Barang">
+                                                <span class="material-symbols-outlined text-[15px]">delete</span>
+                                                <span>Hapus</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-medium">
+                                        <span class="material-symbols-outlined text-[14px]">visibility</span>
+                                        Hanya Lihat
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="px-space-lg py-[60px] text-center">
+                                <div class="flex flex-col items-center gap-space-md text-secondary">
+                                    <span class="material-symbols-outlined text-[48px] text-outline-variant">inventory_2</span>
+                                    <p class="font-body-md text-body-md">Belum ada data barang yang terdaftar.</p>
+                                    @if ($canManageBarang)
+                                        <a href="{{ route('barang.create') }}"
+                                           class="inline-flex items-center gap-1 bg-[#EA580C] text-on-primary px-space-lg py-space-sm rounded-xl font-headline-sm text-headline-sm hover:bg-[#C2410C] transition-colors">
+                                            <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                                            Tambah Barang Pertama
+                                        </a>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if ($barangs->count() > 0)
+            <div class="px-space-lg py-space-md border-t border-outline-variant flex items-center justify-between">
+                <span class="font-body-sm text-body-sm text-secondary">
+                    Menampilkan <strong id="visibleCount" class="text-on-surface">{{ $barangs->count() }}</strong> dari {{ $barangs->count() }} data barang
+                </span>
+            </div>
+        @endif
+    </section>
+@endsection
+
+@push('scripts')
     <script>
-        const tombol = document.getElementById('tombol-menu-hp');
-        const menu = document.getElementById('menu-hp');
-        
-        if(tombol && menu) {
-            tombol.addEventListener('click', () => {
-                menu.classList.toggle('hidden');
-                menu.classList.toggle('flex');
-            });
-        }
-    </script>
-    <!-- Script Search Filter -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        (function () {
             const searchInput = document.getElementById('searchInput');
-            const tableRows   = document.querySelectorAll('.barang-row');
+            const filterKategori = document.getElementById('filterKategori');
+            const filterKondisi = document.getElementById('filterKondisi');
+            const rows = document.querySelectorAll('.barang-row');
+            const visibleCountEl = document.getElementById('visibleCount');
 
-            if (searchInput) {
-                searchInput.addEventListener('input', () => {
-                    const query = searchInput.value.toLowerCase().trim();
-                    tableRows.forEach(row => {
-                        const text = row.innerText.toLowerCase();
-                        row.style.display = (query === '' || text.includes(query)) ? '' : 'none';
-                    });
+            function applyFilters() {
+                const keyword = (searchInput ? searchInput.value : '').toLowerCase().trim();
+                const selectedKat = (filterKategori ? filterKategori.value : '').toLowerCase().trim();
+                const selectedKon = (filterKondisi ? filterKondisi.value : '').toLowerCase().trim();
+
+                let count = 0;
+                rows.forEach(function (row) {
+                    const text = row.innerText.toLowerCase();
+                    const rowKat = (row.getAttribute('data-kategori') || '').toLowerCase();
+                    const rowKon = (row.getAttribute('data-kondisi') || '').toLowerCase();
+
+                    const matchKeyword = !keyword || text.includes(keyword);
+                    const matchKat = !selectedKat || rowKat === selectedKat;
+                    const matchKon = !selectedKon || rowKon === selectedKon;
+
+                    if (matchKeyword && matchKat && matchKon) {
+                        row.style.display = '';
+                        count++;
+                    } else {
+                        row.style.display = 'none';
+                    }
                 });
+
+                if (visibleCountEl) {
+                    visibleCountEl.textContent = count;
+                }
             }
-        });
+
+            if (searchInput) searchInput.addEventListener('input', applyFilters);
+            if (filterKategori) filterKategori.addEventListener('change', applyFilters);
+            if (filterKondisi) filterKondisi.addEventListener('change', applyFilters);
+        })();
     </script>
-</body>
-</html>
+@endpush

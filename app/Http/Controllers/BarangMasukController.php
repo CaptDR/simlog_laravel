@@ -2,40 +2,116 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Barang;
 use App\Models\BarangMasuk;
+use App\Models\Kategori;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class BarangMasukController extends Controller
 {
     /**
-     * Menampilkan daftar semua transaksi barang masuk,
-     * diurutkan dari tanggal terbaru, beserta relasi nama barangnya.
+     * Menampilkan daftar transaksi barang masuk beserta 3 kartu KPI ringan,
+     * filter kategori, filter sumber bantuan, pencarian kata kunci, dan pagination.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $barangMasuks = BarangMasuk::with('barang')
-                                   ->orderBy('tanggal_masuk', 'desc')
-                                   ->orderBy('id_masuk', 'desc')
-                                   ->get();
+        $now      = Carbon::now();
+        $todayStr = $now->toDateString();
+        $next30   = $now->copy()->addDays(30)->toDateString();
 
-        return view('barang_masuk.index', compact('barangMasuks'));
+        // ===== 3 KARTU RINGKASAN RINGAN (LIGHTWEIGHT KPI STRIP) =====
+        $penerimaanBulanIni = BarangMasuk::whereMonth('tanggal_masuk', $now->month)
+            ->whereYear('tanggal_masuk', $now->year)
+            ->count();
+
+        $totalKuantitasBulanIni = (int) BarangMasuk::whereMonth('tanggal_masuk', $now->month)
+            ->whereYear('tanggal_masuk', $now->year)
+            ->sum('jumlah_masuk');
+
+        $batchMendekatiExpired = BarangMasuk::whereNotNull('expire_date')
+            ->whereBetween('expire_date', [$todayStr, $next30])
+            ->count();
+
+        // ===== QUERY UTAMA DENGAN FILTER & EAGER LOADING =====
+        $query = BarangMasuk::with(['barang.kategori'])
+            ->orderBy('tanggal_masuk', 'desc')
+            ->orderBy('id_masuk', 'desc');
+
+        // Filter berdasarkan Kategori Barang
+        if ($request->filled('id_kategori')) {
+            $katId = $request->id_kategori;
+            $query->whereHas('barang', function ($q) use ($katId) {
+                $q->where('id_kategori', $katId);
+            });
+        }
+
+        // Filter berdasarkan Sumber Bantuan
+        if ($request->filled('sumber_bantuan')) {
+            $query->where('sumber_bantuan', $request->sumber_bantuan);
+        }
+
+        // Filter Pencarian berdasarkan Nama Barang, Merk, atau Keterangan
+        if ($request->filled('search')) {
+            $keyword = trim($request->search);
+            $query->where(function ($q) use ($keyword) {
+                $q->where('keterangan', 'LIKE', '%' . $keyword . '%')
+                  ->orWhere('sumber_bantuan', 'LIKE', '%' . $keyword . '%')
+                  ->orWhereHas('barang', function ($qb) use ($keyword) {
+                      $qb->where('nama_barang', 'LIKE', '%' . $keyword . '%')
+                         ->orWhere('merk', 'LIKE', '%' . $keyword . '%');
+                  });
+            });
+        }
+
+        $barangMasuks = $query->paginate(15)->withQueryString();
+
+        // Data pendukung dropdown filter
+        $kategoris = Kategori::orderBy('id_kategori', 'asc')->get();
+
+        $defaultSumber = [
+            'BNPB Pusat',
+            'BPBD Provinsi',
+            'Kemensos RI',
+            'APBD',
+            'CSR/Swasta',
+            'Masyarakat/NGO',
+        ];
+        $dbSumber   = BarangMasuk::select('sumber_bantuan')->distinct()->pluck('sumber_bantuan')->filter()->toArray();
+        $sumberList = array_values(array_unique(array_merge($defaultSumber, $dbSumber)));
+
+        return view('barang_masuk.index', compact(
+            'barangMasuks',
+            'kategoris',
+            'sumberList',
+            'penerimaanBulanIni',
+            'totalKuantitasBulanIni',
+            'batchMendekatiExpired'
+        ));
     }
 
     /**
      * Menampilkan form untuk mencatat barang masuk baru.
-     * Mengambil semua data Barang untuk dropdown.
+     * Memuat seluruh barang aktif (termasuk yang stoknya masih 0).
      */
     public function create()
     {
-        $barangs = Barang::orderBy('nama_barang', 'asc')->get();
-        return view('barang_masuk.create', compact('barangs'));
+        $kategoris = Kategori::orderBy('id_kategori', 'asc')->get();
+        $barangs   = Barang::with('kategori')
+                           ->where(function ($q) {
+                               $q->where('is_active', true)->orWhereNull('is_active');
+                           })
+                           ->orderBy('nama_barang', 'asc')
+                           ->get();
+
+        return view('barang_masuk.create', compact('kategoris', 'barangs'));
     }
 
     /**
      * Menyimpan transaksi barang masuk ke database.
-     * Setelah insert, stok_sekarang di tb_barang ikut bertambah (trigger manual).
+     * Setelah insert, stok_sekarang di tb_barang ikut bertambah.
      */
     public function store(Request $request)
     {
@@ -59,15 +135,18 @@ class BarangMasukController extends Controller
             'bukti_dokumen.mimes'     => 'File bukti hanya boleh berformat JPG, PNG, atau PDF.',
             'bukti_dokumen.max'       => 'Ukuran file maksimal 10 MB.',
         ]);
-        // ===== UPLOAD BUKTI DOKUMEN (jika ada) =====
+
         $namaBukti = null;
         if ($request->hasFile('bukti_dokumen')) {
             $file      = $request->file('bukti_dokumen');
             $namaBukti = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/barang_masuk'), $namaBukti);
+            $uploadDir = public_path('uploads/barang_masuk');
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $file->move($uploadDir, $namaBukti);
         }
 
-        // ===== INSERT KE tb_barang_masuk =====
         BarangMasuk::create([
             'id_barang'      => $request->id_barang,
             'tanggal_masuk'  => $request->tanggal_masuk,
@@ -78,10 +157,15 @@ class BarangMasukController extends Controller
             'keterangan'     => $request->keterangan,
         ]);
 
-        // ===== TRIGGER MANUAL: Update stok_sekarang di tb_barang =====
         $barang = Barang::findOrFail($request->id_barang);
         $barang->stok_sekarang += $request->jumlah_masuk;
         $barang->save();
+
+        ActivityLogger::log(
+            'Tambah',
+            'Barang Masuk',
+            "Mencatat penerimaan barang masuk: {$barang->nama_barang} sejumlah {$request->jumlah_masuk} {$barang->satuan} dari sumber {$request->sumber_bantuan}."
+        );
 
         return redirect()->route('barang-masuk.index')
                          ->with('success', 'Barang masuk berhasil dicatat dan stok telah diperbarui!');
@@ -89,35 +173,36 @@ class BarangMasukController extends Controller
 
     /**
      * Menghapus satu record barang masuk dan merollback stok (stok dikurangi kembali).
-     * Menggunakan DB::transaction untuk menjamin integritas data dan konsistensi stok.
      */
     public function destroy(string $id)
     {
         $barangMasuk = BarangMasuk::findOrFail($id);
         $barang      = Barang::findOrFail($barangMasuk->id_barang);
 
-        // Validasi pengaman: Cegah stok menjadi minus jika transaksi di-rollback
         if ($barang->stok_sekarang < $barangMasuk->jumlah_masuk) {
             return redirect()->route('barang-masuk.index')
-                             ->with('error', 'Gagal menghapus! Sisa stok saat ini (' . $barang->stok_sekarang . ' ' . ($barang->satuan ?? '') . ') tidak mencukupi untuk rollback transaksi masuk sejumlah ' . $barangMasuk->jumlah_masuk . '. Stok akan menjadi minus.');
+                             ->with('error', 'Gagal menghapus! Sisa stok saat ini (' . $barang->stok_sekarang . ' ' . ($barang->satuan ?? '') . ') tidak mencukupi untuk rollback transaksi masuk sejumlah ' . $barangMasuk->jumlah_masuk . '.');
         }
 
         DB::transaction(function () use ($barangMasuk, $barang) {
-            // 1. Rollback stok: Kurangi stok_sekarang di tb_barang
             $barang->stok_sekarang -= $barangMasuk->jumlah_masuk;
             $barang->save();
 
-            // 2. Hapus berkas bukti jika ada di server
             if ($barangMasuk->bukti_dokumen) {
                 $filePath = public_path('uploads/barang_masuk/' . $barangMasuk->bukti_dokumen);
                 if (file_exists($filePath)) {
-                    unlink($filePath);
+                    @unlink($filePath);
                 }
             }
 
-            // 3. Hapus data transaksi masuk
             $barangMasuk->delete();
         });
+
+        ActivityLogger::log(
+            'Hapus',
+            'Barang Masuk',
+            "Menghapus transaksi barang masuk (rollback stok): {$barang->nama_barang} sejumlah {$barangMasuk->jumlah_masuk} " . ($barang->satuan ?? '') . "."
+        );
 
         return redirect()->route('barang-masuk.index')
                          ->with('success', 'Transaksi barang masuk berhasil dihapus dan stok barang telah dikurangi kembali.');

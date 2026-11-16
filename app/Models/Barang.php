@@ -10,9 +10,23 @@ class Barang extends Model
     protected $primaryKey = 'id_barang';
     public $timestamps = false;
 
-    // Kolom kategori (ENUM) sudah dihapus, diganti id_kategori
     protected $fillable = [
-        'kode_barang', 'nama_barang', 'id_kategori', 'satuan', 'stok_sekarang', 'stok_minimum'
+        'kode_barang',
+        'nama_barang',
+        'id_kategori',
+        'satuan',
+        'merk',
+        'gambar',
+        'kondisi',
+        'is_active',
+        'stok_sekarang',
+        'stok_minimum',
+    ];
+
+    protected $casts = [
+        'is_active'     => 'boolean',
+        'stok_sekarang' => 'integer',
+        'stok_minimum'  => 'integer',
     ];
 
     // Relasi ke tb_kategori
@@ -29,5 +43,10 @@ class Barang extends Model
     public function barangKeluar()
     {
         return $this->hasMany(BarangKeluar::class, 'id_barang', 'id_barang');
+    }
+
+    public function pemutihans()
+    {
+        return $this->hasMany(Pemutihan::class, 'barang_id', 'id_barang');
     }
 }

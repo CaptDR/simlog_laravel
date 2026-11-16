@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Barang;
 use App\Models\BarangKeluar;
 use Illuminate\Http\Request;
@@ -120,6 +121,12 @@ class BarangKeluarController extends Controller
             $barang->save();
         });
 
+        ActivityLogger::log(
+            'Tambah',
+            'Barang Keluar',
+            "Mencatat pengeluaran barang ({$request->jenis_pengeluaran}): [{$barang->kode_barang}] {$barang->nama_barang} sejumlah {$request->jumlah_keluar} {$barang->satuan} untuk penerima {$request->penerima} ({$request->tujuan_distribusi})."
+        );
+
         return redirect()->route('barang-keluar.index')
                          ->with('success', 'Barang keluar berhasil dicatat dan stok telah dikurangi.');
     }
@@ -149,6 +156,14 @@ class BarangKeluarController extends Controller
         });
 
         $namaBarang = $barangKeluar->barang->nama_barang ?? 'Barang';
+        $kodeBarang = $barangKeluar->barang->kode_barang ?? '-';
+
+        ActivityLogger::log(
+            'Ubah',
+            'Barang Keluar',
+            "Mencatat pengembalian alat/barang: [{$kodeBarang}] {$namaBarang} sejumlah {$barangKeluar->jumlah_keluar} dari {$barangKeluar->penerima} kembali ke gudang."
+        );
+
         return redirect()->route('barang-keluar.index')
                          ->with('success', "Alat/Barang '{$namaBarang}' sebanyak {$barangKeluar->jumlah_keluar} telah berhasil dikembalikan ke gudang dan stok bertambah!");
     }
@@ -169,7 +184,10 @@ class BarangKeluarController extends Controller
      */
     public function destroy($id)
     {
-        $barangKeluar = BarangKeluar::findOrFail($id);
+        $barangKeluar = BarangKeluar::with('barang')->findOrFail($id);
+        $namaBarang   = $barangKeluar->barang->nama_barang ?? 'Barang';
+        $kodeBarang   = $barangKeluar->barang->kode_barang ?? '-';
+        $jumlahKeluar = $barangKeluar->jumlah_keluar;
 
         DB::transaction(function () use ($barangKeluar) {
             $barang = Barang::findOrFail($barangKeluar->id_barang);
@@ -192,6 +210,12 @@ class BarangKeluarController extends Controller
             // Hapus record transaksi keluar
             $barangKeluar->delete();
         });
+
+        ActivityLogger::log(
+            'Hapus',
+            'Barang Keluar',
+            "Menghapus transaksi barang keluar (rollback stok): [{$kodeBarang}] {$namaBarang} sejumlah {$jumlahKeluar}."
+        );
 
         return redirect()->route('barang-keluar.index')
                          ->with('success', 'Data transaksi barang keluar berhasil dihapus dan stok barang telah dikembalikan ke gudang.');
