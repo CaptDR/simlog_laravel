@@ -1,173 +1,177 @@
 @extends('layouts.app')
 
-@section('title', 'Manajemen Akun Pengguna')
+@section('title', 'Manajemen Akun Pengguna - SIMLOG BPBD')
+@section('header-title', 'Manajemen Akun & Hak Akses (RBAC)')
+@section('header-subtitle', 'Kelola akun personel BPBD Kota Cirebon, pengaturan role (Superadmin, Kasie, Logistik, TRC), dan aktivasi akun')
 
 @section('content')
-    <!-- Operational Status Bar -->
-    <section class="bg-[#0F172A] text-surface rounded-xl p-space-md shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm relative overflow-hidden">
-        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#EA580C]"></div>
-        <div class="flex items-center gap-space-sm pl-space-xs">
-            <span class="inline-flex relative h-3 w-3">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#EA580C] opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-[#EA580C]"></span>
-            </span>
-            <div class="flex flex-wrap items-center gap-x-space-sm gap-y-1">
-                <span class="font-label-sm text-label-sm uppercase tracking-wider text-[#EA580C] bg-[#EA580C]/20 px-2 py-0.5 rounded">Otoritas Superadmin</span>
-                <span class="font-headline-sm text-headline-sm text-surface font-bold tracking-tight">MANAJEMEN AKUN &amp; HAK AKSES PENGGUNA (RBAC)</span>
-            </div>
-        </div>
-        <span class="font-label-sm text-label-sm text-secondary-fixed-dim pl-space-xs md:pl-0">
-            Total Akun: <strong class="text-[#EA580C]">{{ $users->count() }} Pengguna</strong>
-        </span>
-    </section>
+@php
+    $totalUsers  = $users->count();
+    $activeUsers = $users->where('is_active', true)->count();
+@endphp
 
-    <!-- Header Area -->
-    <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm border border-slate-200/60">
-        <div class="space-y-space-xs">
-            <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-secondary font-label-md text-label-md">
-                <a href="{{ url('/dashboard') }}" class="hover:text-on-surface cursor-pointer">Beranda</a>
-                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-                <span class="text-on-surface font-semibold">Manajemen Akun</span>
-            </nav>
+<div class="space-y-5">
+
+    <!-- Top Strip & Tombol Tambah Akun -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-2xl bg-slate-900 text-orange-400 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[24px]">manage_accounts</span>
+            </div>
             <div>
-                <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">
-                    Manajemen <span class="text-[#EA580C]">Akun Pengguna</span>
-                </h1>
-                <div class="h-1 w-[90px] bg-[#EA580C] rounded-full mt-2"></div>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-base sm:text-lg font-extrabold text-slate-900">Daftar Akun Personel SIMLOG</h2>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        {{ $activeUsers }} / {{ $totalUsers }} Aktif
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    Otorisasi penuh Superadmin untuk mengatur kredensial login berbasis username dan hak akses 4 role.
+                </p>
             </div>
-            <p class="font-body-md text-body-md text-secondary max-w-2xl pt-1">
-                Kelola akun personel BPBD Kota Cirebon, pengaturan role (Superadmin, Kasie, Logistik, TRC), serta status aktivasi akun.
-            </p>
         </div>
+
         <a href="{{ route('users.create') }}"
-           class="inline-flex items-center gap-space-xs bg-[#EA580C] hover:bg-[#C2410C] text-on-primary px-space-lg py-space-sm rounded-xl font-headline-sm text-headline-sm transition-colors shadow-md whitespace-nowrap self-start lg:self-auto">
-            <span class="material-symbols-outlined text-[20px]">person_add</span>
-            Tambah Akun Baru
+           class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs sm:text-sm font-extrabold shadow-sm transition shrink-0">
+            <span class="material-symbols-outlined text-[19px]">person_add</span>
+            <span>+ Tambah Akun Baru</span>
         </a>
-    </header>
-
-    <!-- Flash Message Success -->
-    @if (session('success'))
-        <div class="flex items-center gap-space-sm bg-[#d1fae5] border border-[#10b981] text-[#065f46] px-space-lg py-space-md rounded-xl shadow-sm">
-            <span class="material-symbols-outlined text-[20px] text-[#10b981]">check_circle</span>
-            <span class="font-body-md text-body-md font-medium">{{ session('success') }}</span>
-        </div>
-    @endif
-
-    <!-- Flash Message Error -->
-    @if (session('error'))
-        <div class="flex items-center gap-space-sm bg-error-container border border-error text-on-error-container px-space-lg py-space-md rounded-xl shadow-sm">
-            <span class="material-symbols-outlined text-[20px] text-error">error</span>
-            <span class="font-body-md text-body-md font-medium">{{ session('error') }}</span>
-        </div>
-    @endif
+    </div>
 
     <!-- Tabel Daftar Akun -->
-    <section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-slate-200/60">
-        <div class="p-space-lg border-b border-outline-variant flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
-            <div class="flex items-center gap-space-sm">
-                <span class="material-symbols-outlined text-[#EA580C] text-[22px]">manage_accounts</span>
-                <span class="font-headline-sm text-headline-sm text-on-surface">Daftar Akun Personel</span>
+    <section class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200/80">
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-orange-600 text-[20px]">badge</span>
+                <span class="text-sm sm:text-base font-extrabold text-slate-900">Tabel Akun Personel BPBD</span>
             </div>
-            <div class="flex items-center gap-space-sm bg-surface-container rounded-lg px-space-md py-space-xs border border-outline-variant w-full sm:w-auto">
-                <span class="material-symbols-outlined text-secondary text-[18px]">search</span>
-                <input id="searchUser" type="text" placeholder="Cari nama, username, atau NIP..."
-                       class="bg-transparent outline-none font-body-md text-body-md text-on-surface placeholder-secondary w-full sm:w-64"/>
+
+            <div class="relative w-full sm:w-72">
+                <span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                <input id="searchUser"
+                       type="text"
+                       aria-label="Cari nama, username, NIP, atau role personel"
+                       placeholder="Cari nama, username, NIP, atau role..."
+                       class="w-full pl-10 pr-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition"/>
             </div>
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full">
+            <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-surface-container border-b border-outline-variant">
-                        <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider">No</th>
-                        <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider">Nama Lengkap</th>
-                        <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider">Username</th>
-                        <th class="text-left px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider">NIP</th>
-                        <th class="text-center px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider">Role</th>
-                        <th class="text-center px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider">Status Akun</th>
-                        <th class="text-center px-space-lg py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider">Aksi</th>
+                    <tr class="bg-slate-50/90 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                        <th class="py-3.5 px-4 text-center w-14">No</th>
+                        <th class="py-3.5 px-4">Personel</th>
+                        <th class="py-3.5 px-4">Username Login</th>
+                        <th class="py-3.5 px-4">NIP / Identitas</th>
+                        <th class="py-3.5 px-4 text-center">Role Akses</th>
+                        <th class="py-3.5 px-4 text-center">Status Akun</th>
+                        <th class="py-3.5 px-4 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="userTableBody" class="divide-y divide-outline-variant">
+                <tbody id="userTableBody" class="divide-y divide-slate-100 text-xs sm:text-sm">
                     @forelse ($users as $index => $u)
-                        <tr class="table-row-hover user-row">
-                            <td class="px-space-lg py-space-md font-tabular-data text-tabular-data text-secondary">
+                        @php
+                            $roleLower = strtolower($u->role);
+                            $roleBadgeClass = match($roleLower) {
+                                'superadmin' => 'bg-purple-50 text-purple-700 border-purple-200',
+                                'kasie'      => 'bg-blue-50 text-blue-700 border-blue-200',
+                                'logistik'   => 'bg-orange-50 text-orange-700 border-orange-200',
+                                'trc'        => 'bg-teal-50 text-teal-700 border-teal-200',
+                                default      => 'bg-slate-100 text-slate-700 border-slate-200',
+                            };
+                            $roleLabel = match($roleLower) {
+                                'superadmin' => 'SUPERADMIN',
+                                'kasie'      => 'KASIE DARLOG',
+                                'logistik'   => 'LOGISTIK',
+                                'trc'        => 'TIM TRC',
+                                default      => strtoupper($u->role),
+                            };
+                            $initial = strtoupper(substr($u->name, 0, 1));
+                        @endphp
+                        <tr class="user-row hover:bg-slate-50/80 transition">
+                            <td class="py-3.5 px-4 text-center font-bold text-slate-400">
                                 {{ $index + 1 }}
                             </td>
-                            <td class="px-space-lg py-space-md">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-headline-sm text-headline-sm text-on-surface">{{ $u->name }}</span>
-                                    @if (auth()->id() === $u->id)
-                                        <span class="px-2 py-0.5 text-[10px] font-bold uppercase bg-[#EA580C]/15 text-[#EA580C] rounded-full">Anda</span>
-                                    @endif
+
+                            <td class="py-3.5 px-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-slate-900 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+                                        {{ $initial }}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-slate-900 truncate">{{ $u->name }}</span>
+                                            @if (auth()->id() === $u->id)
+                                                <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase bg-orange-100 text-orange-700 border border-orange-200 rounded-full">
+                                                    Anda
+                                                </span>
+                                            @endif
+                                        </div>
+                                        @if ($u->email)
+                                            <p class="text-[11px] text-slate-400 truncate">{{ $u->email }}</p>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
-                            <td class="px-space-lg py-space-md font-tabular-data text-tabular-data text-on-surface">
-                                <span class="bg-surface-container px-2.5 py-1 rounded font-semibold text-on-surface">{{ $u->username }}</span>
+
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <span class="font-mono text-xs font-bold text-slate-800 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">
+                                    {{ $u->username }}
+                                </span>
                             </td>
-                            <td class="px-space-lg py-space-md font-tabular-data text-tabular-data text-secondary">
+
+                            <td class="py-3.5 px-4 font-mono text-xs text-slate-600 whitespace-nowrap">
                                 {{ $u->nip ?: '—' }}
                             </td>
-                            <td class="px-space-lg py-space-md text-center">
-                                @php
-                                    $roleLower = strtolower($u->role);
-                                    $roleBadgeClass = match($roleLower) {
-                                        'superadmin' => 'bg-purple-100 text-purple-800 border border-purple-300',
-                                        'kasie'      => 'bg-blue-100 text-blue-800 border border-blue-300',
-                                        'logistik'   => 'bg-orange-100 text-orange-800 border border-orange-300',
-                                        'trc'        => 'bg-teal-100 text-teal-800 border border-teal-300',
-                                        default      => 'bg-gray-100 text-gray-800 border border-gray-300',
-                                    };
-                                    $roleLabel = match($roleLower) {
-                                        'superadmin' => 'SUPERADMIN',
-                                        'kasie'      => 'KASIE DARLOG',
-                                        'logistik'   => 'LOGISTIK',
-                                        'trc'        => 'TIM TRC',
-                                        default      => strtoupper($u->role),
-                                    };
-                                @endphp
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold tracking-wider {{ $roleBadgeClass }}">
+
+                            <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-extrabold tracking-wider border {{ $roleBadgeClass }}">
                                     {{ $roleLabel }}
                                 </span>
                             </td>
-                            <td class="px-space-lg py-space-md text-center">
+
+                            <td class="py-3.5 px-4 text-center whitespace-nowrap">
                                 @if ($u->is_active)
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                                         Aktif
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-800 border border-red-300">
-                                        <span class="w-2 h-2 rounded-full bg-red-600"></span>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>
                                         Nonaktif
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-space-lg py-space-md text-center">
-                                <div class="inline-flex items-center justify-center gap-2">
+
+                            <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                                <div class="inline-flex items-center justify-end gap-1.5">
                                     <a href="{{ route('users.edit', $u->id) }}"
-                                       class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface font-label-md text-label-md transition-colors"
+                                       class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition"
                                        title="Edit Akun">
-                                        <span class="material-symbols-outlined text-[16px] text-primary">edit</span>
+                                        <span class="material-symbols-outlined text-[16px] text-orange-600">edit</span>
                                         <span>Edit</span>
                                     </a>
 
                                     @if (auth()->id() !== $u->id)
-                                        <form action="{{ route('users.destroy', $u->id) }}" method="POST" class="inline-block"
+                                        <form action="{{ route('users.destroy', $u->id) }}"
+                                              method="POST"
+                                              class="inline-block"
                                               onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun {{ $u->name }} ({{ $u->username }})?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-error-container hover:bg-error hover:text-on-error text-error font-label-md text-label-md transition-colors"
+                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 text-xs font-bold transition"
                                                     title="Hapus Akun">
                                                 <span class="material-symbols-outlined text-[16px]">delete</span>
                                                 <span>Hapus</span>
                                             </button>
                                         </form>
                                     @else
-                                        <button type="button" disabled
-                                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-secondary opacity-50 cursor-not-allowed font-label-md text-label-md"
+                                        <button type="button"
+                                                disabled
+                                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-bold cursor-not-allowed"
                                                 title="Tidak dapat menghapus akun sendiri">
                                             <span class="material-symbols-outlined text-[16px]">lock</span>
                                             <span>Aktif</span>
@@ -178,7 +182,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-space-lg py-12 text-center text-secondary">
+                            <td colspan="7" class="py-14 px-4 text-center text-slate-500">
                                 Belum ada data akun pengguna.
                             </td>
                         </tr>
@@ -187,19 +191,21 @@
             </table>
         </div>
     </section>
+
+</div>
 @endsection
 
 @push('scripts')
-    <script>
-        const searchInput = document.getElementById('searchUser');
-        if (searchInput) {
-            searchInput.addEventListener('input', function () {
-                const keyword = this.value.toLowerCase();
-                document.querySelectorAll('.user-row').forEach(row => {
-                    const text = row.innerText.toLowerCase();
-                    row.style.display = text.includes(keyword) ? '' : 'none';
-                });
+<script>
+    const searchInput = document.getElementById('searchUser');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const keyword = this.value.toLowerCase();
+            document.querySelectorAll('.user-row').forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(keyword) ? '' : 'none';
             });
-        }
-    </script>
+        });
+    }
+</script>
 @endpush

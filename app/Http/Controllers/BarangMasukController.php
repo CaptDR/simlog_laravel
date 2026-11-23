@@ -121,7 +121,8 @@ class BarangMasukController extends Controller
             'expire_date'    => 'nullable|date',
             'jumlah_masuk'   => 'required|integer|min:1',
             'sumber_bantuan' => 'required|string|max:100',
-            'bukti_dokumen'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'bukti_dokumen'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'bukti_bast'     => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'keterangan'     => 'nullable|string|max:500',
         ], [
             'id_barang.required'      => 'Nama barang wajib dipilih.',
@@ -132,19 +133,22 @@ class BarangMasukController extends Controller
             'jumlah_masuk.required'   => 'Jumlah masuk wajib diisi.',
             'jumlah_masuk.min'        => 'Jumlah masuk minimal 1.',
             'sumber_bantuan.required' => 'Sumber bantuan wajib dipilih.',
-            'bukti_dokumen.mimes'     => 'File bukti hanya boleh berformat JPG, PNG, atau PDF.',
-            'bukti_dokumen.max'       => 'Ukuran file maksimal 10 MB.',
+            'bukti_dokumen.mimes'     => 'File bukti BAST hanya boleh berformat JPG, JPEG, PNG, atau PDF.',
+            'bukti_dokumen.max'       => 'Ukuran file bukti BAST maksimal 5 MB.',
+            'bukti_bast.mimes'        => 'File bukti BAST hanya boleh berformat JPG, JPEG, PNG, atau PDF.',
+            'bukti_bast.max'          => 'Ukuran file bukti BAST maksimal 5 MB.',
         ]);
 
         $namaBukti = null;
-        if ($request->hasFile('bukti_dokumen')) {
-            $file      = $request->file('bukti_dokumen');
-            $namaBukti = time() . '_' . $file->getClientOriginalName();
+        $uploadedBast = $request->file('bukti_dokumen') ?? $request->file('bukti_bast');
+        if ($uploadedBast) {
+            $ext       = strtolower($uploadedBast->extension() ?: $uploadedBast->getClientOriginalExtension());
+            $namaBukti = 'bast_' . time() . '_' . uniqid() . '.' . $ext;
             $uploadDir = public_path('uploads/barang_masuk');
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
-            $file->move($uploadDir, $namaBukti);
+            $uploadedBast->move($uploadDir, $namaBukti);
         }
 
         BarangMasuk::create([

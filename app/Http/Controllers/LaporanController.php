@@ -131,30 +131,39 @@ class LaporanController extends Controller
         $barang = Barang::where(function ($query) use ($start_date, $end_date) {
             $query->whereHas('barangMasuk', function ($q) use ($start_date, $end_date) {
                 $q->whereBetween('tanggal_masuk', [$start_date, $end_date]);
-            })->orWhereHas('barangKeluar', function ($q) use ($start_date, $end_date) {
-                $q->whereBetween('tanggal_keluar', [$start_date, $end_date]);
+            })->orWhereHas('barangKeluarDetails', function ($q) use ($start_date, $end_date) {
+                $q->whereHas('barangKeluar', function ($qh) use ($start_date, $end_date) {
+                    $qh->whereBetween('tanggal_keluar', [$start_date, $end_date])
+                       ->whereNotIn('status', ['Ditolak', 'Dibatalkan']);
+                });
             });
         })->with([
             'kategori',
             'barangMasuk' => function ($q) use ($start_date, $end_date) {
                 $q->whereBetween('tanggal_masuk', [$start_date, $end_date]);
             },
-            'barangKeluar' => function ($q) use ($start_date, $end_date) {
-                $q->whereBetween('tanggal_keluar', [$start_date, $end_date]);
+            'barangKeluarDetails' => function ($q) use ($start_date, $end_date) {
+                $q->whereHas('barangKeluar', function ($qh) use ($start_date, $end_date) {
+                    $qh->whereBetween('tanggal_keluar', [$start_date, $end_date])
+                       ->whereNotIn('status', ['Ditolak', 'Dibatalkan']);
+                });
             }
         ])
         ->withSum(['barangMasuk as total_masuk' => function ($query) use ($start_date, $end_date) {
             $query->whereBetween('tanggal_masuk', [$start_date, $end_date]);
         }], 'jumlah_masuk')
-        ->withSum(['barangKeluar as total_keluar' => function ($query) use ($start_date, $end_date) {
-            $query->whereBetween('tanggal_keluar', [$start_date, $end_date]);
-        }], 'jumlah_keluar')
+        ->withSum(['barangKeluarDetails as total_keluar' => function ($query) use ($start_date, $end_date) {
+            $query->whereHas('barangKeluar', function ($qh) use ($start_date, $end_date) {
+                $qh->whereBetween('tanggal_keluar', [$start_date, $end_date])
+                   ->whereNotIn('status', ['Ditolak', 'Dibatalkan']);
+            });
+        }], 'jumlah')
         ->orderBy('id_kategori', 'asc')
         ->orderBy('nama_barang', 'asc')
         ->get()
         ->map(function ($item) {
             $item->total_masuk = (int) ($item->total_masuk ?? $item->barangMasuk->sum('jumlah_masuk'));
-            $item->total_keluar = (int) ($item->total_keluar ?? $item->barangKeluar->sum('jumlah_keluar'));
+            $item->total_keluar = (int) ($item->total_keluar ?? $item->barangKeluarDetails->sum('jumlah'));
             return $item;
         });
 

@@ -14,7 +14,7 @@ use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Web Routes — RBAC 4 Role Murni (superadmin, kasie, logistik, trc)
 |--------------------------------------------------------------------------
 */
 
@@ -27,12 +27,13 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ==========================================
-// Group A: Khusus Superadmin & Logistik
-// Akses: Kelola Master Data Barang, Import .xlsx, Barang Masuk (Create/Store/Destroy),
-//        & Pengajuan Pemutihan Barang (Create/Store)
+// Group A: Khusus Petugas Logistik (auth + role:logistik)
+// Akses: Input/Edit Master Data Barang, Import .xlsx, Input/Hapus Barang Masuk,
+//        Pengajuan & Pembatalan Barang Keluar, Konfirmasi Pengembalian Peralatan,
+//        & Pengajuan Pemutihan Barang
 // ==========================================
-Route::middleware(['role:superadmin,logistik'])->group(function () {
-    // Template & Import Excel (.xlsx) Data Barang (beserta alias CSV untuk kompatibilitas)
+Route::middleware(['auth', 'role:logistik'])->group(function () {
+    // Template & Import Excel (.xlsx) Data Barang (beserta alias CSV)
     Route::get('/barang/template-xlsx', [BarangController::class, 'downloadTemplateXlsx'])->name('barang.template-xlsx');
     Route::post('/barang/import-xlsx', [BarangController::class, 'importXlsx'])->name('barang.import-xlsx');
     Route::get('/barang/template-csv', [BarangController::class, 'downloadTemplateCsv'])->name('barang.template-csv');
@@ -41,28 +42,46 @@ Route::middleware(['role:superadmin,logistik'])->group(function () {
     // Create, Store, Edit, Update, Destroy Data Barang
     Route::resource('barang', BarangController::class)->except(['index', 'show']);
 
-    // Create, Store, Destroy Barang Masuk
+    // Create, Store, & Destroy Barang Masuk
     Route::resource('barang-masuk', BarangMasukController::class)->only(['create', 'store', 'destroy']);
 
     // Pengajuan Pemutihan Barang (Create & Store)
     Route::get('/pemutihan/create', [PemutihanController::class, 'create'])->name('pemutihan.create');
     Route::post('/pemutihan', [PemutihanController::class, 'store'])->name('pemutihan.store');
+
+    // Pengeluaran Barang Multi-Item (Create, Store, Cancel) & Pengembalian Peralatan
+    Route::get('/barang-keluar/create', [BarangKeluarController::class, 'create'])->name('barang-keluar.create');
+    Route::post('/barang-keluar', [BarangKeluarController::class, 'store'])->name('barang-keluar.store');
+    Route::post('/barang-keluar/{id}/cancel', [BarangKeluarController::class, 'cancel'])->name('barang-keluar.cancel');
+    Route::post('/barang-keluar/detail/{detail}/return', [BarangKeluarController::class, 'returnEquipment'])->name('barang-keluar.return-equipment');
 });
 
 // ==========================================
-// Group B: Khusus Superadmin & Kasie
-// Akses: Persetujuan (Approve / Reject) Pemutihan Barang
+// Group B: Khusus Kepala Seksi / Kasie (auth + role:kasie)
+// Akses: Persetujuan (Approve / Reject) Pemutihan Barang & Barang Keluar
 // ==========================================
-Route::middleware(['role:superadmin,kasie'])->group(function () {
+Route::middleware(['auth', 'role:kasie'])->group(function () {
     Route::post('/pemutihan/{id}/approve', [PemutihanController::class, 'approve'])->name('pemutihan.approve');
     Route::post('/pemutihan/{id}/reject', [PemutihanController::class, 'reject'])->name('pemutihan.reject');
+
+    Route::post('/barang-keluar/{id}/approve', [BarangKeluarController::class, 'approve'])->name('barang-keluar.approve');
+    Route::post('/barang-keluar/{id}/reject', [BarangKeluarController::class, 'reject'])->name('barang-keluar.reject');
 });
 
 // ==========================================
-// Group C: Role Superadmin, Kasie, & Logistik
-// Akses: Daftar Barang Masuk, Daftar Pemutihan, Laporan Mutasi, & Log Aktivitas
+// Group B2: Khusus Tim TRC Regu 1–5 (auth + role:trc)
+// Akses: Mulai Pengiriman/Operasi & Konfirmasi Serah Terima Lapangan (GPS + Kamera)
 // ==========================================
-Route::middleware(['role:superadmin,kasie,logistik'])->group(function () {
+Route::middleware(['auth', 'role:trc'])->group(function () {
+    Route::post('/barang-keluar/{id}/start-delivery', [BarangKeluarController::class, 'startDelivery'])->name('barang-keluar.start-delivery');
+    Route::post('/barang-keluar/{id}/complete-delivery', [BarangKeluarController::class, 'completeDelivery'])->name('barang-keluar.complete-delivery');
+});
+
+// ==========================================
+// Group C: Role Kasie & Logistik (auth + role:kasie,logistik)
+// Akses: Daftar Barang Masuk, Daftar Pemutihan, & Laporan Mutasi
+// ==========================================
+Route::middleware(['auth', 'role:kasie,logistik'])->group(function () {
     // Daftar Barang Masuk
     Route::get('/barang-masuk', [BarangMasukController::class, 'index'])->name('barang-masuk.index');
 
@@ -73,36 +92,43 @@ Route::middleware(['role:superadmin,kasie,logistik'])->group(function () {
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/cetak', [LaporanController::class, 'cetak'])->name('laporan.cetak');
     Route::get('/laporan/excel', [LaporanController::class, 'exportExcel'])->name('laporan.excel');
-
-    // Modul Log Aktivitas Otomatis
-    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 });
 
 // ==========================================
-// Group D: Seluruh Role Aktif (superadmin, kasie, logistik, trc)
-// Akses: Dashboard, Pengaturan Akun, Lihat Data Barang (Index/Show), & Barang Keluar
+// Group C2: Role Operasional (auth + role:kasie,logistik,trc)
+// Akses: Lihat Data Barang (Index/Show) & Daftar/Detail/Cetak Barang Keluar
 // ==========================================
-Route::middleware(['role:superadmin,kasie,logistik,trc'])->group(function () {
+Route::middleware(['auth', 'role:kasie,logistik,trc'])->group(function () {
+    // Lihat Data Barang (Index & Show)
+    Route::resource('barang', BarangController::class)->only(['index', 'show']);
+
+    // Modul Barang Keluar (Daftar, Tracking/Detail, & Cetak Surat Jalan)
+    Route::get('/barang-keluar', [BarangKeluarController::class, 'index'])->name('barang-keluar.index');
+    Route::get('/barang-keluar/{id}/cetak', [BarangKeluarController::class, 'cetakSurat'])->name('barang-keluar.cetak');
+    Route::get('/barang-keluar/{id}', [BarangKeluarController::class, 'show'])->name('barang-keluar.show');
+});
+
+// ==========================================
+// Group D: Seluruh Role Aktif (auth + role:superadmin,kasie,logistik,trc)
+// Akses: Dashboard & Pengaturan Akun (Profil & Ganti Password Mandiri)
+// ==========================================
+Route::middleware(['auth', 'role:superadmin,kasie,logistik,trc'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Pengaturan Akun: Profil & Ganti Password Mandiri
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
-
-    // Lihat Data Barang (Index & Show)
-    Route::resource('barang', BarangController::class)->only(['index', 'show']);
-
-    // Modul Barang Keluar
-    Route::get('barang-keluar/{id}/cetak', [BarangKeluarController::class, 'cetakSurat'])->name('barang-keluar.cetak');
-    Route::match(['post', 'patch'], 'barang-keluar/{id}/kembalikan', [BarangKeluarController::class, 'kembalikan'])->name('barang-keluar.kembalikan');
-    Route::resource('barang-keluar', BarangKeluarController::class);
 });
 
 // ==========================================
-// Group E: Khusus Superadmin
-// Akses: Modul Manajemen Akun (/users)
+// Group E: Khusus Superadmin Murni (auth + role:superadmin)
+// Akses: Modul Manajemen Akun (/users) & Log Aktivitas (/activity-logs)
 // ==========================================
-Route::middleware(['role:superadmin'])->group(function () {
+Route::middleware(['auth', 'role:superadmin'])->group(function () {
     Route::resource('users', UserController::class)->except(['show']);
+
+    // Modul Log Aktivitas Otomatis & Export .txt
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::get('/activity-logs/export-txt', [ActivityLogController::class, 'exportTxt'])->name('activity-logs.export-txt');
 });

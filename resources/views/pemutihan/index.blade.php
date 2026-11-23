@@ -5,8 +5,8 @@
 @section('content')
     @php
         $userRole = strtolower(auth()->user()->role ?? session('role', ''));
-        $canCreatePemutihan = in_array($userRole, ['superadmin', 'logistik']);
-        $canApprovePemutihan = in_array($userRole, ['superadmin', 'kasie']);
+        $canCreatePemutihan = ($userRole === 'logistik');
+        $canApprovePemutihan = ($userRole === 'kasie');
     @endphp
 
     <!-- Operational Status Bar -->
@@ -204,7 +204,9 @@
                         <th class="text-left px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider">Keterangan &amp; Pengaju</th>
                         <th class="text-center px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Bukti Foto</th>
                         <th class="text-center px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Status Approval</th>
-                        <th class="text-center px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Aksi</th>
+                        @if ($canApprovePemutihan)
+                            <th class="text-center px-space-md py-space-md font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-outline-variant">
@@ -274,6 +276,10 @@
                                        class="inline-block group" title="Lihat Bukti Foto">
                                         <img src="{{ asset('uploads/pemutihan/' . $pm->bukti_foto) }}"
                                              alt="Bukti Pemutihan"
+                                             width="48"
+                                             height="48"
+                                             loading="lazy"
+                                             decoding="async"
                                              class="w-12 h-12 rounded-xl object-cover border border-slate-200 shadow-xs group-hover:scale-105 transition-transform mx-auto"/>
                                     </a>
                                 @else
@@ -294,34 +300,34 @@
                                 @endif
                             </td>
 
-                            <!-- Aksi Approval (Khusus Superadmin & Kasie saat Menunggu Persetujuan) -->
-                            <td class="px-space-md py-space-md text-center whitespace-nowrap">
-                                @if ($pm->status === 'Menunggu Persetujuan' && $canApprovePemutihan)
-                                    <div class="inline-flex items-center gap-1.5">
-                                        <button type="button"
-                                                onclick="openApprovalModal('approve', '{{ route('pemutihan.approve', $pm->id) }}', '{{ $pm->kode_pemutihan }}', '{{ addslashes($pm->barang->nama_barang ?? '') }}', '{{ $pm->jumlah }} {{ $pm->barang->satuan ?? '' }}')"
-                                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors">
-                                            <span class="material-symbols-outlined text-[15px]">check_circle</span>
-                                            <span>Setujui</span>
-                                        </button>
+                            <!-- Aksi Approval (Khusus Superadmin & Kasie) -->
+                            @if ($canApprovePemutihan)
+                                <td class="px-space-md py-space-md text-center whitespace-nowrap">
+                                    @if ($pm->status === 'Menunggu Persetujuan')
+                                        <div class="inline-flex items-center gap-1.5">
+                                            <button type="button"
+                                                    onclick="openApprovalModal('approve', '{{ route('pemutihan.approve', $pm->id) }}', '{{ $pm->kode_pemutihan }}', '{{ addslashes($pm->barang->nama_barang ?? '') }}', '{{ $pm->jumlah }} {{ $pm->barang->satuan ?? '' }}')"
+                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors">
+                                                <span class="material-symbols-outlined text-[15px]">check_circle</span>
+                                                <span>Setujui</span>
+                                            </button>
 
-                                        <button type="button"
-                                                onclick="openApprovalModal('reject', '{{ route('pemutihan.reject', $pm->id) }}', '{{ $pm->kode_pemutihan }}', '{{ addslashes($pm->barang->nama_barang ?? '') }}', '{{ $pm->jumlah }} {{ $pm->barang->satuan ?? '' }}')"
-                                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition-colors">
-                                            <span class="material-symbols-outlined text-[15px]">cancel</span>
-                                            <span>Tolak</span>
-                                        </button>
-                                    </div>
-                                @elseif ($pm->status === 'Menunggu Persetujuan')
-                                    <span class="text-xs text-amber-700 font-medium italic">Menunggu Kasie</span>
-                                @else
-                                    <span class="text-xs text-secondary italic">Selesai</span>
-                                @endif
-                            </td>
+                                            <button type="button"
+                                                    onclick="openApprovalModal('reject', '{{ route('pemutihan.reject', $pm->id) }}', '{{ $pm->kode_pemutihan }}', '{{ addslashes($pm->barang->nama_barang ?? '') }}', '{{ $pm->jumlah }} {{ $pm->barang->satuan ?? '' }}')"
+                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition-colors">
+                                                <span class="material-symbols-outlined text-[15px]">cancel</span>
+                                                <span>Tolak</span>
+                                            </button>
+                                        </div>
+                                    @else
+                                        <span class="text-xs text-secondary italic">Selesai</span>
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-space-lg py-16 text-center text-secondary">
+                            <td colspan="{{ $canApprovePemutihan ? 8 : 7 }}" class="px-space-lg py-16 text-center text-secondary">
                                 <div class="flex flex-col items-center gap-2">
                                     <span class="material-symbols-outlined text-[42px] text-slate-300">auto_delete</span>
                                     <p class="font-headline-sm text-headline-sm text-on-surface">Belum ada pengajuan pemutihan barang</p>

@@ -22,10 +22,19 @@ class BarangController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Barang::with('kategori')->orderBy('id_barang', 'asc');
+        $query = Barang::with([
+                'kategori',
+                'barangMasuks' => fn ($q) => $q->orderBy('tanggal_masuk', 'desc')->orderBy('id_masuk', 'desc'),
+            ])
+            ->withCount(['barangMasuks', 'barangKeluarDetails', 'pemutihans'])
+            ->orderBy('id_barang', 'asc');
 
         if ($request->filled('id_kategori')) {
             $query->where('id_kategori', $request->id_kategori);
+        }
+
+        if ($request->filled('jenis_barang')) {
+            $query->where('jenis_barang', $request->jenis_barang);
         }
 
         if ($request->filled('kondisi')) {
@@ -60,7 +69,8 @@ class BarangController extends Controller
             'merk'         => 'nullable|string|max:100',
             'kondisi'      => 'required|in:Baik,Rusak Ringan,Dalam Perbaikan,Rusak Berat',
             'stok_minimum' => 'nullable|integer|min:0',
-            'gambar'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar'       => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'foto'         => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
         ], [
             'nama_barang.required' => 'Nama barang wajib diisi.',
             'id_kategori.required' => 'Kategori wajib dipilih.',
@@ -71,7 +81,10 @@ class BarangController extends Controller
             'stok_minimum.min'     => 'Stok minimum tidak boleh negatif.',
             'gambar.image'         => 'File yang diunggah harus berupa gambar.',
             'gambar.mimes'         => 'Format foto barang harus JPG, JPEG, PNG, atau WEBP.',
-            'gambar.max'           => 'Ukuran foto barang maksimal 2 MB.',
+            'gambar.max'           => 'Ukuran foto barang maksimal 5 MB.',
+            'foto.image'           => 'File yang diunggah harus berupa gambar.',
+            'foto.mimes'           => 'Format foto barang harus JPG, JPEG, PNG, atau WEBP.',
+            'foto.max'             => 'Ukuran foto barang maksimal 5 MB.',
         ]);
 
         // ===== AUTO-NUMBERING KODE BARANG =====
@@ -89,20 +102,24 @@ class BarangController extends Controller
 
         // ===== UPLOAD FOTO BARANG (JIKA ADA) =====
         $namaGambar = null;
-        if ($request->hasFile('gambar')) {
-            $file       = $request->file('gambar');
-            $namaGambar = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $uploadedFoto = $request->file('gambar') ?? $request->file('foto');
+        if ($uploadedFoto) {
+            $ext        = strtolower($uploadedFoto->extension() ?: $uploadedFoto->getClientOriginalExtension());
+            $namaGambar = time() . '_' . uniqid() . '.' . $ext;
             $uploadDir  = public_path('uploads/barang');
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
-            $file->move($uploadDir, $namaGambar);
+            $uploadedFoto->move($uploadDir, $namaGambar);
         }
+
+        $jenisBarang = Barang::detectJenisByKategori($kategori->nama_kategori);
 
         Barang::create([
             'kode_barang'   => $kodeBarang,
             'nama_barang'   => $request->nama_barang,
             'id_kategori'   => $request->id_kategori,
+            'jenis_barang'  => $jenisBarang,
             'satuan'        => $request->satuan,
             'merk'          => $request->merk,
             'gambar'        => $namaGambar,
@@ -115,7 +132,7 @@ class BarangController extends Controller
         ActivityLogger::log(
             'Tambah',
             'Data Barang',
-            "Menambahkan data barang baru: {$request->nama_barang} ({$kodeBarang}) — Kondisi: {$request->kondisi}."
+            "Menambahkan data barang baru: {$request->nama_barang} ({$kodeBarang}) [Jenis: " . strtoupper($jenisBarang) . ", Kondisi: {$request->kondisi}]."
         );
 
         return redirect()->route('barang.index')
@@ -151,8 +168,9 @@ class BarangController extends Controller
         // Tabel Referensi Kategori untuk Dropdown Validation
         $guideSheet->setCellValue('A9', 'Daftar Kategori Valid');
         $guideSheet->setCellValue('B9', 'Kode Prefix');
-        $guideSheet->getStyle('A9:B9')->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
-        $guideSheet->getStyle('A9:B9')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF0F172A');
+        $guideSheet->setCellValue('C9', 'Jenis Alur Barang');
+        $guideSheet->getStyle('A9:C9')->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
+        $guideSheet->getStyle('A9:C9')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF0F172A');
 
         $kategoris = Kategori::orderBy('id_kategori', 'asc')->get();
         $katStartRow = 10;
@@ -160,38 +178,53 @@ class BarangController extends Controller
 
         if ($kategoris->isEmpty()) {
             $defaultKats = [
-                ['nama' => 'Pangan & Permakanan', 'prefix' => 'PGN'],
-                ['nama' => 'Sandang & Pakaian', 'prefix' => 'SDG'],
-                ['nama' => 'Medis & Kesehatan', 'prefix' => 'MDS'],
-                ['nama' => 'Peralatan Evakuasi (SAR)', 'prefix' => 'SAR'],
+                ['nama' => 'Logistik Pangan & Air Bersih',    'prefix' => 'PGN'],
+                ['nama' => 'Sandang & Perlengkapan Tidur',    'prefix' => 'SDG'],
+                ['nama' => 'Hunian Sementara (Shelter)',      'prefix' => 'HNI'],
+                ['nama' => 'Kebersihan & Sanitasi',           'prefix' => 'KBR'],
+                ['nama' => 'Kebutuhan Kelompok Rentan',       'prefix' => 'RTN'],
+                ['nama' => 'Kesehatan & Medis',               'prefix' => 'MDS'],
+                ['nama' => 'Logistik Pendukung Lainnya',      'prefix' => 'LPL'],
+                ['nama' => 'Peralatan Evakuasi & SAR',        'prefix' => 'SAR'],
+                ['nama' => 'Peralatan Dapur Umum',            'prefix' => 'DPR'],
+                ['nama' => 'Peralatan Komunikasi & Navigasi', 'prefix' => 'KOM'],
+                ['nama' => 'Peralatan Pendukung Lapangan',    'prefix' => 'PPL'],
             ];
             foreach ($defaultKats as $dk) {
+                $jenisAlur = Barang::detectJenisByKategori($dk['nama']) === 'peralatan'
+                    ? 'Peralatan (Pinjam-Kembali)'
+                    : 'Logistik (Habis Pakai)';
                 $guideSheet->setCellValue('A' . $currentRow, $dk['nama']);
                 $guideSheet->setCellValue('B' . $currentRow, $dk['prefix']);
+                $guideSheet->setCellValue('C' . $currentRow, $jenisAlur);
                 $currentRow++;
             }
         } else {
             foreach ($kategoris as $kat) {
+                $jenisAlur = Barang::detectJenisByKategori($kat->nama_kategori) === 'peralatan'
+                    ? 'Peralatan (Pinjam-Kembali)'
+                    : 'Logistik (Habis Pakai)';
                 $guideSheet->setCellValue('A' . $currentRow, $kat->nama_kategori);
                 $guideSheet->setCellValue('B' . $currentRow, $kat->kode_prefix);
+                $guideSheet->setCellValue('C' . $currentRow, $jenisAlur);
                 $currentRow++;
             }
         }
         $katEndRow = $currentRow - 1;
 
         // Tabel Referensi Kondisi Valid
-        $guideSheet->setCellValue('D9', 'Pilihan Kondisi Valid');
-        $guideSheet->getStyle('D9')->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
-        $guideSheet->getStyle('D9')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFEA580C');
+        $guideSheet->setCellValue('E9', 'Pilihan Kondisi Valid');
+        $guideSheet->getStyle('E9')->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
+        $guideSheet->getStyle('E9')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFEA580C');
 
         $kondisiOptions = ['Baik', 'Rusak Ringan', 'Dalam Perbaikan', 'Rusak Berat'];
         $konRow = 10;
         foreach ($kondisiOptions as $ko) {
-            $guideSheet->setCellValue('D' . $konRow, $ko);
+            $guideSheet->setCellValue('E' . $konRow, $ko);
             $konRow++;
         }
 
-        foreach (['A', 'B', 'D'] as $col) {
+        foreach (['A', 'B', 'C', 'E'] as $col) {
             $guideSheet->getColumnDimension($col)->setAutoSize(true);
         }
 
@@ -382,10 +415,13 @@ class BarangController extends Controller
                 $kondisi = 'Baik';
             }
 
+            $jenisBarangImport = Barang::detectJenisByKategori($kategori ? $kategori->nama_kategori : null);
+
             Barang::create([
                 'kode_barang'   => $kodeBarang,
                 'nama_barang'   => $namaBarang,
                 'id_kategori'   => $kategori ? $kategori->id_kategori : 1,
+                'jenis_barang'  => $jenisBarangImport,
                 'satuan'        => $satuan !== '' ? $satuan : 'Unit',
                 'merk'          => $merk !== '' ? $merk : null,
                 'kondisi'       => $kondisi,
@@ -424,7 +460,11 @@ class BarangController extends Controller
      */
     public function show(string $id)
     {
-        $barang = Barang::with('kategori')->findOrFail($id);
+        $barang = Barang::with([
+            'kategori',
+            'latestBarangMasuk',
+            'barangMasuks' => fn ($q) => $q->orderBy('tanggal_masuk', 'desc')->orderBy('id_masuk', 'desc'),
+        ])->findOrFail($id);
         return view('barang.show', compact('barang'));
     }
 
@@ -433,7 +473,7 @@ class BarangController extends Controller
      */
     public function edit(string $id)
     {
-        $barang   = Barang::findOrFail($id);
+        $barang   = Barang::with('kategori')->findOrFail($id);
         $kategori = Kategori::orderBy('id_kategori', 'asc')->get();
         return view('barang.edit', compact('barang', 'kategori'));
     }
@@ -443,7 +483,7 @@ class BarangController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $barang = Barang::findOrFail($id);
+        $barang = Barang::with('kategori')->findOrFail($id);
 
         $request->validate([
             'nama_barang'  => 'required|string|max:255',
@@ -453,7 +493,8 @@ class BarangController extends Controller
             'kondisi'      => 'required|in:Baik,Rusak Ringan,Dalam Perbaikan,Rusak Berat',
             'stok_minimum' => 'nullable|integer|min:0',
             'is_active'    => 'required|boolean',
-            'gambar'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gambar'       => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'foto'         => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
         ], [
             'nama_barang.required' => 'Nama barang wajib diisi.',
             'id_kategori.required' => 'Kategori wajib dipilih.',
@@ -463,12 +504,19 @@ class BarangController extends Controller
             'kondisi.in'           => 'Pilihan kondisi barang tidak valid.',
             'gambar.image'         => 'File yang diunggah harus berupa gambar.',
             'gambar.mimes'         => 'Format foto harus JPG, JPEG, PNG, atau WEBP.',
-            'gambar.max'           => 'Ukuran foto maksimal 2 MB.',
+            'gambar.max'           => 'Ukuran foto maksimal 5 MB.',
+            'foto.image'           => 'File yang diunggah harus berupa gambar.',
+            'foto.mimes'           => 'Format foto harus JPG, JPEG, PNG, atau WEBP.',
+            'foto.max'             => 'Ukuran foto maksimal 5 MB.',
         ]);
+
+        $kategoriPilih = Kategori::findOrFail($request->id_kategori);
+        $jenisBarang   = Barang::detectJenisByKategori($kategoriPilih->nama_kategori);
 
         $dataUpdate = [
             'nama_barang'  => $request->nama_barang,
             'id_kategori'  => $request->id_kategori,
+            'jenis_barang' => $jenisBarang,
             'satuan'       => $request->satuan,
             'merk'         => $request->merk,
             'kondisi'      => $request->kondisi,
@@ -476,20 +524,21 @@ class BarangController extends Controller
             'stok_minimum' => $request->filled('stok_minimum') ? (int) $request->stok_minimum : $barang->stok_minimum,
         ];
 
-        if ($request->hasFile('gambar')) {
+        $uploadedFoto = $request->file('gambar') ?? $request->file('foto');
+        if ($uploadedFoto) {
             if ($barang->gambar) {
                 $oldPath = public_path('uploads/barang/' . $barang->gambar);
                 if (file_exists($oldPath)) {
                     @unlink($oldPath);
                 }
             }
-            $file       = $request->file('gambar');
-            $namaGambar = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $ext        = strtolower($uploadedFoto->extension() ?: $uploadedFoto->getClientOriginalExtension());
+            $namaGambar = time() . '_' . uniqid() . '.' . $ext;
             $uploadDir  = public_path('uploads/barang');
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
-            $file->move($uploadDir, $namaGambar);
+            $uploadedFoto->move($uploadDir, $namaGambar);
             $dataUpdate['gambar'] = $namaGambar;
         }
 
@@ -519,7 +568,7 @@ class BarangController extends Controller
 
         if ($hasHistory) {
             return redirect()->route('barang.index')
-                ->with('error', "Barang '{$barang->nama_barang}' tidak dapat dihapus permanen karena sudah memiliki riwayat transaksi (Masuk/Keluar/Pemutihan). Silakan nonaktifkan barang melalui menu Edit.");
+                ->with('error', "Barang '{$barang->nama_barang}' tidak dapat dihapus permanen karena sudah memiliki riwayat transaksi. Silakan nonaktifkan barang melalui menu Edit atau ajukan melalui modul Pemutihan Barang.");
         }
 
         if ($barang->gambar) {

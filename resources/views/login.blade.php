@@ -5,43 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SIMLOG BPBD Kota Cirebon</title>
     <meta name="description" content="Portal Autentikasi Sistem Informasi Manajemen Logistik & Peralatan BPBD Kota Cirebon.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23EA580C'/%3E%3Cpath d='M32 14L48 46H16L32 14Z' fill='%23FFFFFF'/%3E%3C/svg%3E"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        'bpbd-navy': '#0F172A',
-                        'bpbd-orange': '#EA580C',
-                        'bpbd-orange-hover': '#C2410C',
-                    }
-                }
-            }
-        };
-    </script>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_a_photo,add_box,add_circle,add_photo_alternate,admin_panel_settings,alternate_email,apps,archive,arrow_back,arrow_forward,assessment,assignment,assignment_return,assignment_returned,assignment_turned_in,attach_file,auto_delete,auto_mode,badge,block,build,build_circle,calendar_month,calendar_today,cancel,category,check_circle,chevron_right,close,construction,date_range,delete,delete_forever,description,donut_large,download,edit,edit_square,error,event_busy,expand_more,fact_check,filter_alt,folder_special,gavel,grid_view,health_and_safety,help,history,history_toggle_off,image,image_not_supported,info,inventory,inventory_2,key,layers,leaderboard,list_alt,local_shipping,lock,lock_reset,login,logout,mail,manage_accounts,menu,menu_open,monitoring,move_to_inbox,my_location,north_east,notification_important,open_in_new,person,person_add,photo_camera,pie_chart,pin,pin_drop,playlist_add,print,production_quantity_limits,progress_activity,publish,receipt_long,redeem,remove_circle_outline,report,report_problem,restart_alt,rocket_launch,route,save,schedule,search,search_off,sell,send,send_time_extension,settings,settings_backup_restore,shield,shield_lock,shield_person,south_west,space_dashboard,stacked_bar_chart,straighten,table_view,toggle_on,trending_down,trending_up,upload_file,verified,verified_user,visibility,visibility_off,warehouse,warning,where_to_vote&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_a_photo,add_box,add_circle,add_photo_alternate,admin_panel_settings,alternate_email,apps,archive,arrow_back,arrow_forward,assessment,assignment,assignment_return,assignment_returned,assignment_turned_in,attach_file,auto_delete,auto_mode,badge,block,build,build_circle,calendar_month,calendar_today,cancel,category,check_circle,chevron_right,close,construction,date_range,delete,delete_forever,description,donut_large,download,edit,edit_square,error,event_busy,expand_more,fact_check,filter_alt,folder_special,gavel,grid_view,health_and_safety,help,history,history_toggle_off,image,image_not_supported,info,inventory,inventory_2,key,layers,leaderboard,list_alt,local_shipping,lock,lock_reset,login,logout,mail,manage_accounts,menu,menu_open,monitoring,move_to_inbox,my_location,north_east,notification_important,open_in_new,person,person_add,photo_camera,pie_chart,pin,pin_drop,playlist_add,print,production_quantity_limits,progress_activity,publish,receipt_long,redeem,remove_circle_outline,report,report_problem,restart_alt,rocket_launch,route,save,schedule,search,search_off,sell,send,send_time_extension,settings,settings_backup_restore,shield,shield_lock,shield_person,south_west,space_dashboard,stacked_bar_chart,straighten,table_view,toggle_on,trending_down,trending_up,upload_file,verified,verified_user,visibility,visibility_off,warehouse,warning,where_to_vote&display=swap">
+    </noscript>
     <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        /* Pola geometris taktis kebencanaan jika video/gambar belum tersedia */
-        .tactical-grid-pattern {
-            background-image:
-                radial-gradient(circle at 20% 20%, rgba(234, 88, 12, 0.28) 0%, transparent 45%),
-                radial-gradient(circle at 80% 75%, rgba(234, 88, 12, 0.18) 0%, transparent 50%),
-                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+        .material-symbols-outlined {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            line-height: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            vertical-align: middle;
+            flex-shrink: 0;
         }
     </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col lg:flex-row overflow-x-hidden">
 
@@ -63,7 +48,7 @@
             <!-- Elemen Dekoratif Radar / Lingkaran Komando Darurat -->
             <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full border border-orange-500/20 pointer-events-none z-0"></div>
             <div class="absolute -top-12 -left-12 w-72 h-72 rounded-full border border-orange-500/15 pointer-events-none z-0"></div>
-            <div class="absolute bottom-[-120px] right-[-80px] w-[460px] h-[460px] rounded-full bg-gradient-to-tr from-[#EA580C]/20 to-amber-500/5 blur-3xl pointer-events-none z-0"></div>
+            <div class="absolute bottom-[-120px] right-[-80px] w-[460px] h-[460px] rounded-full bg-gradient-to-tr from-[#EA580C]/15 to-amber-500/5 pointer-events-none z-0"></div>
             <svg class="absolute right-8 top-12 w-64 h-64 text-white/[0.03] pointer-events-none z-0 hidden sm:block" viewBox="0 0 200 200" fill="none">
                 <circle cx="100" cy="100" r="90" stroke="currentColor" stroke-width="2" stroke-dasharray="6 6"/>
                 <circle cx="100" cy="100" r="65" stroke="currentColor" stroke-width="1.5"/>
@@ -78,7 +63,7 @@
 
         <!-- Bagian Atas Panel Kiri: Identitas Instansi & Status Posko -->
         <div class="relative z-20 flex flex-wrap items-center justify-between gap-4">
-            <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/15 px-4 py-2 rounded-full">
+            <div class="inline-flex items-center gap-3 bg-slate-800/90 border border-white/15 px-4 py-2 rounded-full">
                 <span class="w-8 h-8 rounded-full bg-[#EA580C] flex items-center justify-center shadow-md shadow-orange-600/30">
                     <span class="material-symbols-outlined text-white text-[18px]">shield</span>
                 </span>
@@ -116,7 +101,7 @@
             <!-- 3 Poin Ringkas Keunggulan Sistem -->
             <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <!-- Poin 1: Pelacakan Stok Real-Time -->
-                <div class="bg-white/[0.06] hover:bg-white/[0.1] backdrop-blur-sm border border-white/10 rounded-2xl p-4 transition-all">
+                <div class="bg-slate-800/60 hover:bg-slate-800/80 border border-white/10 rounded-2xl p-4 transition-all">
                     <div class="w-10 h-10 rounded-xl bg-[#EA580C]/20 border border-[#EA580C]/40 flex items-center justify-center text-[#EA580C] mb-3">
                         <span class="material-symbols-outlined text-[22px]">inventory_2</span>
                     </div>
@@ -127,7 +112,7 @@
                 </div>
 
                 <!-- Poin 2: Distribusi Cepat TRC -->
-                <div class="bg-white/[0.06] hover:bg-white/[0.1] backdrop-blur-sm border border-white/10 rounded-2xl p-4 transition-all">
+                <div class="bg-slate-800/60 hover:bg-slate-800/80 border border-white/10 rounded-2xl p-4 transition-all">
                     <div class="w-10 h-10 rounded-xl bg-[#EA580C]/20 border border-[#EA580C]/40 flex items-center justify-center text-[#EA580C] mb-3">
                         <span class="material-symbols-outlined text-[22px]">local_shipping</span>
                     </div>
@@ -138,7 +123,7 @@
                 </div>
 
                 <!-- Poin 3: Akuntabilitas Terpadu -->
-                <div class="bg-white/[0.06] hover:bg-white/[0.1] backdrop-blur-sm border border-white/10 rounded-2xl p-4 transition-all">
+                <div class="bg-slate-800/60 hover:bg-slate-800/80 border border-white/10 rounded-2xl p-4 transition-all">
                     <div class="w-10 h-10 rounded-xl bg-[#EA580C]/20 border border-[#EA580C]/40 flex items-center justify-center text-[#EA580C] mb-3">
                         <span class="material-symbols-outlined text-[22px]">verified_user</span>
                     </div>

@@ -81,7 +81,8 @@ class PemutihanController extends Controller
             'jumlah'     => 'required|integer|min:1',
             'alasan'     => 'required|in:Kadaluarsa,Rusak Berat,Hilang/Susut',
             'keterangan' => 'required|string|max:1000',
-            'bukti_foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'bukti_foto' => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'foto'       => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
         ], [
             'barang_id.required'  => 'Barang wajib dipilih.',
             'barang_id.exists'    => 'Barang yang dipilih tidak valid.',
@@ -92,7 +93,10 @@ class PemutihanController extends Controller
             'keterangan.required' => 'Keterangan / kronologi wajib diisi.',
             'bukti_foto.image'    => 'Bukti foto harus berupa gambar.',
             'bukti_foto.mimes'    => 'Format bukti foto harus JPG, JPEG, PNG, atau WEBP.',
-            'bukti_foto.max'      => 'Ukuran bukti foto maksimal 4 MB.',
+            'bukti_foto.max'      => 'Ukuran bukti foto maksimal 5 MB.',
+            'foto.image'          => 'Bukti foto harus berupa gambar.',
+            'foto.mimes'          => 'Format bukti foto harus JPG, JPEG, PNG, atau WEBP.',
+            'foto.max'            => 'Ukuran bukti foto maksimal 5 MB.',
         ]);
 
         $barang = Barang::findOrFail($request->barang_id);
@@ -117,14 +121,15 @@ class PemutihanController extends Controller
 
         // Upload bukti foto jika ada
         $namaFoto = null;
-        if ($request->hasFile('bukti_foto')) {
-            $file      = $request->file('bukti_foto');
-            $namaFoto  = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $uploadedFoto = $request->file('bukti_foto') ?? $request->file('foto');
+        if ($uploadedFoto) {
+            $ext       = strtolower($uploadedFoto->extension() ?: $uploadedFoto->getClientOriginalExtension());
+            $namaFoto  = time() . '_' . uniqid() . '.' . $ext;
             $uploadDir = public_path('uploads/pemutihan');
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
-            $file->move($uploadDir, $namaFoto);
+            $uploadedFoto->move($uploadDir, $namaFoto);
         }
 
         $pemutihan = Pemutihan::create([

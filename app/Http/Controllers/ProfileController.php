@@ -17,7 +17,8 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        $recentActivities = ActivityLog::where('user_id', Auth::id())
+        $recentActivities = ActivityLog::with('user')
+            ->where('user_id', Auth::id())
             ->latest()
             ->take(10)
             ->get();

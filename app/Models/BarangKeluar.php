@@ -9,43 +9,66 @@ class BarangKeluar extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel di database.
-     */
-    protected $table = 'tb_barang_keluar';
+    protected $table = 'barang_keluars';
 
-    /**
-     * Primary key tabel.
-     */
-    protected $primaryKey = 'id_keluar';
-
-    /**
-     * Nonaktifkan timestamps otomatis (created_at / updated_at)
-     * karena tabel tidak memiliki kolom tersebut.
-     */
-    public $timestamps = false;
-
-    /**
-     * Kolom yang boleh diisi secara massal (mass assignable).
-     */
     protected $fillable = [
-        'id_barang',
+        'kode_transaksi',
         'tanggal_keluar',
-        'jumlah_keluar',
-        'jenis_pengeluaran',
-        'tujuan_distribusi',
-        'koordinat_lokasi',
+        'tujuan_bencana',
         'penerima',
-        'bukti_dokumentasi',
-        'status_pengeluaran',
         'keterangan',
+        'status',
+        'approval_status',
+        'created_by',
+        'approved_by',
+        'approved_at',
+        'trc_by',
+        'shipped_at',
+        'delivered_at',
+        'latitude',
+        'longitude',
+        'lokasi_aktual',
+        'foto_bukti',
+    ];
+
+    protected $casts = [
+        'tanggal_keluar' => 'date',
+        'approved_at'    => 'datetime',
+        'shipped_at'     => 'datetime',
+        'delivered_at'   => 'datetime',
+        'latitude'       => 'float',
+        'longitude'      => 'float',
     ];
 
     /**
-     * Relasi: setiap transaksi barang keluar merujuk ke satu data Barang.
+     * Relasi ke rincian barang yang dikeluarkan (Multi-Item).
      */
-    public function barang()
+    public function details()
     {
-        return $this->belongsTo(Barang::class, 'id_barang', 'id_barang');
+        return $this->hasMany(BarangKeluarDetail::class, 'barang_keluar_id');
+    }
+
+    /**
+     * Relasi ke petugas logistik pembuat pengajuan.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Relasi ke Kepala Seksi Darlog / Superadmin yang menyetujui atau menolak.
+     */
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Relasi ke petugas Tim TRC yang mengirim & menyerahkan bantuan di lapangan.
+     */
+    public function trc()
+    {
+        return $this->belongsTo(User::class, 'trc_by');
     }
 }

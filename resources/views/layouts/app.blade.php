@@ -5,251 +5,40 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>@yield('title', 'Dashboard') - SIMLOG BPBD Kota Cirebon</title>
     <meta name="description" content="@yield('meta_description', 'Sistem Informasi Manajemen Logistik & Peralatan Bencana BPBD Kota Cirebon.')"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "bpbd-navy": "#0F172A",
-                        "bpbd-orange": "#EA580C",
-                        "primary-fixed": "#ffdbcc",
-                        "inverse-primary": "#ffb694",
-                        "on-secondary-container": "#656464",
-                        "error": "#ba1a1a",
-                        "surface": "#fcf9f8",
-                        "inverse-surface": "#303030",
-                        "tertiary-fixed": "#ffdbca",
-                        "inverse-on-surface": "#f3f0ef",
-                        "on-secondary-fixed-variant": "#474646",
-                        "outline": "#8e7164",
-                        "on-tertiary-container": "#542200",
-                        "on-primary": "#ffffff",
-                        "surface-container-highest": "#e5e2e1",
-                        "on-surface": "#1b1b1c",
-                        "on-error-container": "#93000a",
-                        "surface-container-lowest": "#ffffff",
-                        "tertiary-fixed-dim": "#ffb68e",
-                        "on-primary-container": "#571f00",
-                        "surface-bright": "#fcf9f8",
-                        "background": "#f8fafc",
-                        "tertiary-container": "#f57310",
-                        "on-surface-variant": "#5a4136",
-                        "secondary-fixed-dim": "#c8c6c5",
-                        "secondary": "#5f5e5e",
-                        "secondary-fixed": "#e5e2e1",
-                        "tertiary": "#9c4500",
-                        "surface-variant": "#e5e2e1",
-                        "on-primary-fixed-variant": "#7b2f00",
-                        "surface-container-high": "#eae7e7",
-                        "on-secondary": "#ffffff",
-                        "on-background": "#1b1b1c",
-                        "on-tertiary-fixed": "#331200",
-                        "surface-container": "#f0eded",
-                        "on-tertiary": "#ffffff",
-                        "primary": "#a14000",
-                        "primary-fixed-dim": "#ffb694",
-                        "on-tertiary-fixed-variant": "#773300",
-                        "surface-container-low": "#f6f3f2",
-                        "primary-container": "#EA580C",
-                        "error-container": "#ffdad6",
-                        "secondary-container": "#e5e2e1",
-                        "on-error": "#ffffff",
-                        "outline-variant": "#e2bfb0",
-                        "surface-tint": "#a14000",
-                        "on-primary-fixed": "#351000",
-                        "on-secondary-fixed": "#1c1b1b",
-                        "surface-dim": "#dcd9d9"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    spacing: {
-                        "gutter-sm": "1rem",
-                        "margin": "2rem",
-                        "space-xl": "2rem",
-                        "margin-mobile": "1rem",
-                        "gutter": "1.5rem",
-                        "space-2xl": "3rem",
-                        "space-xs": "0.25rem",
-                        "space-sm": "0.5rem",
-                        "space-lg": "1.5rem",
-                        "space-md": "1rem"
-                    },
-                    fontFamily: {
-                        "headline-sm": ["Inter"],
-                        "label-md": ["Inter"],
-                        "tabular-data": ["Inter"],
-                        "body-sm": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "headline-md": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "headline-xl": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "headline-xl-mobile": ["Inter"]
-                    },
-                    fontSize: {
-                        "headline-sm": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "600" }],
-                        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.04em", fontWeight: "600" }],
-                        "tabular-data": ["13px", { lineHeight: "18px", letterSpacing: "-0.01em", fontWeight: "500" }],
-                        "body-sm": ["13px", { lineHeight: "18px", letterSpacing: "0.005em", fontWeight: "400" }],
-                        "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "400" }],
-                        "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
-                        "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.05em", fontWeight: "700" }],
-                        "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
-                        "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "700" }],
-                        "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }],
-                        "headline-xl-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "700" }]
-                    }
-                }
-            }
-        };
-    </script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23EA580C'/%3E%3Cpath d='M32 14L48 46H16L32 14Z' fill='%23FFFFFF'/%3E%3C/svg%3E"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <!-- Non-Render-Blocking Google Fonts & Subset Material Symbols (Anti-TBT & Anti-CLS) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" onload="this.onload=null;this.rel='stylesheet'"/>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_a_photo,add_box,add_circle,add_photo_alternate,admin_panel_settings,alternate_email,apps,archive,arrow_back,arrow_forward,assessment,assignment,assignment_return,assignment_returned,assignment_turned_in,attach_file,auto_delete,auto_mode,badge,block,build,build_circle,calendar_month,calendar_today,cancel,category,check_circle,chevron_right,close,construction,date_range,delete,delete_forever,description,donut_large,download,edit,edit_square,error,event_busy,expand_more,fact_check,filter_alt,folder_special,gavel,grid_view,health_and_safety,help,history,history_toggle_off,image,image_not_supported,info,inventory,inventory_2,key,layers,leaderboard,list_alt,local_shipping,lock,lock_reset,login,logout,mail,manage_accounts,menu,menu_open,monitoring,move_to_inbox,my_location,north_east,notification_important,open_in_new,person,person_add,photo_camera,pie_chart,pin,pin_drop,playlist_add,print,production_quantity_limits,progress_activity,publish,receipt_long,redeem,remove_circle_outline,report,report_problem,restart_alt,rocket_launch,route,save,schedule,search,search_off,sell,send,send_time_extension,settings,settings_backup_restore,shield,shield_lock,shield_person,south_west,space_dashboard,stacked_bar_chart,straighten,table_view,toggle_on,trending_down,trending_up,upload_file,verified,verified_user,visibility,visibility_off,warehouse,warning,where_to_vote&display=swap" onload="this.onload=null;this.rel='stylesheet'"/>
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_a_photo,add_box,add_circle,add_photo_alternate,admin_panel_settings,alternate_email,apps,archive,arrow_back,arrow_forward,assessment,assignment,assignment_return,assignment_returned,assignment_turned_in,attach_file,auto_delete,auto_mode,badge,block,build,build_circle,calendar_month,calendar_today,cancel,category,check_circle,chevron_right,close,construction,date_range,delete,delete_forever,description,donut_large,download,edit,edit_square,error,event_busy,expand_more,fact_check,filter_alt,folder_special,gavel,grid_view,health_and_safety,help,history,history_toggle_off,image,image_not_supported,info,inventory,inventory_2,key,layers,leaderboard,list_alt,local_shipping,lock,lock_reset,login,logout,mail,manage_accounts,menu,menu_open,monitoring,move_to_inbox,my_location,north_east,notification_important,open_in_new,person,person_add,photo_camera,pie_chart,pin,pin_drop,playlist_add,print,production_quantity_limits,progress_activity,publish,receipt_long,redeem,remove_circle_outline,report,report_problem,restart_alt,rocket_launch,route,save,schedule,search,search_off,sell,send,send_time_extension,settings,settings_backup_restore,shield,shield_lock,shield_person,south_west,space_dashboard,stacked_bar_chart,straighten,table_view,toggle_on,trending_down,trending_up,upload_file,verified,verified_user,visibility,visibility_off,warehouse,warning,where_to_vote&display=swap"/>
+    </noscript>
+    <!-- Kunci Ukuran Kotak Ikon Sejak Awal Parse HTML (Mencegah CLS = 0) -->
     <style>
-        @layer base {
-            html, body { margin: 0; padding: 0; }
-            body { overscroll-behavior: none; font-family: 'Inter', sans-serif; }
-        }
-        /* Scrollbar halus untuk sidebar & tabel */
-        .sidebar-scroll::-webkit-scrollbar { width: 5px; }
-        .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
-        .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 9999px; }
-
-        /* ===== Shared Form & Table Styling ===== */
-        .form-input,
-        .form-select,
-        .form-textarea {
-            width: 100%;
-            background: #ffffff;
-            border: 1px solid #e2bfb0;
-            border-radius: 0.5rem;
-            padding: 0.625rem 1rem;
-            font-size: 14px;
-            line-height: 20px;
-            color: #1b1b1c;
-            outline: none;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-            appearance: none;
-            -webkit-appearance: none;
-            font-family: 'Inter', sans-serif;
-        }
-        .form-input:focus,
-        .form-select:focus,
-        .form-textarea:focus {
-            border-color: #EA580C;
-            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
-        }
-        .form-input.is-invalid,
-        .form-select.is-invalid,
-        .form-textarea.is-invalid {
-            border-color: #ba1a1a;
-            box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.1);
-        }
-        .form-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: #5a4136;
-            margin-bottom: 0.375rem;
-        }
-        .input-icon-wrapper {
-            position: relative;
-        }
-        .input-icon-wrapper .form-input,
-        .input-icon-wrapper .form-select {
-            padding-left: 2.5rem;
-        }
-        .input-icon-wrapper .input-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 18px;
-            color: #5f5e5e;
-            pointer-events: none;
-        }
-        .select-wrapper {
-            position: relative;
-        }
-        .select-wrapper::after {
-            content: 'expand_more';
-            font-family: 'Material Symbols Outlined';
-            position: absolute;
-            right: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 18px;
-            color: #5f5e5e;
-            pointer-events: none;
-        }
-        .select-wrapper .form-select {
-            padding-left: 2.5rem;
-            padding-right: 2.5rem;
-        }
-        .form-file {
-            width: 100%;
-            font-size: 14px;
-            color: #1b1b1c;
-            font-family: 'Inter', sans-serif;
-        }
-        .form-file::file-selector-button {
-            background: #f0eded;
-            border: 1px solid #e2bfb0;
-            border-radius: 0.375rem;
-            padding: 0.375rem 0.875rem;
-            font-size: 12px;
-            font-weight: 600;
-            color: #5a4136;
-            cursor: pointer;
-            margin-right: 0.75rem;
-            transition: background 0.15s;
-        }
-        .form-file::file-selector-button:hover {
-            background: #e5e2e1;
-        }
-        .form-file-wrapper {
-            border: 1px dashed #e2bfb0;
-            border-radius: 0.5rem;
-            padding: 0.875rem 1rem;
-            background: #fef6f0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .badge-sumber {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 10px;
-            border-radius: 9999px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            background: #fff3e0;
-            color: #a14000;
-            border: 1px solid #ffb694;
-        }
-        .badge-jenis-distribusi { background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-        .badge-jenis-pinjam { background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
-        .badge-jenis-trc { background-color: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
-        .badge-status-dipakai { background-color: #fefce8; color: #854d0e; border: 1px solid #fef08a; }
-        .badge-status-selesai { background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-        .badge-status-kembali { background-color: #f8fafc; color: #334155; border: 1px solid #cbd5e1; }
-        .table-row-hover:hover {
-            background-color: #fef6f1;
-            transition: background-color 0.15s ease;
+        .material-symbols-outlined {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            line-height: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            vertical-align: middle;
+            flex-shrink: 0;
         }
     </style>
+    <!-- Inisialisasi Awal Preferensi Sidebar Collapsed dari localStorage (Anti-Flicker) -->
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('simlog_sidebar_collapsed') === '1') {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
 <body class="bg-slate-50 font-body-md text-on-surface antialiased min-h-screen flex">
@@ -261,6 +50,28 @@
         if ($userRole === 'admin') {
             $userRole = 'logistik';
         }
+
+        $badgeDistribusiLogistik  = (int) ($notifDistribusiLogistik ?? 0);
+        $badgePenggunaanPeralatan = (int) ($notifPenggunaanPeralatan ?? 0);
+        $badgePemutihanCount      = (int) ($notifPemutihan ?? 0);
+
+        // Deteksi menu aktif untuk Distribusi Logistik vs Penggunaan Peralatan
+        $isBarangKeluarRoute = request()->routeIs('barang-keluar.*') || request()->is('barang-keluar', 'barang-keluar/*');
+        $reqJenis = request('jenis');
+
+        if ($isBarangKeluarRoute && !$reqJenis && isset($barangKeluar) && $barangKeluar->relationLoaded('details')) {
+            $hasAlatInDetail = $barangKeluar->details->contains(
+                fn ($d) => ($d->tipe_item === 'peralatan') || ($d->barang && $d->barang->isPeralatan())
+            );
+            $reqJenis = $hasAlatInDetail ? 'peralatan' : 'logistik';
+        }
+
+        $isMenuDistribusiActive = $isBarangKeluarRoute && ($reqJenis !== 'peralatan');
+        $isMenuPeralatanActive  = $isBarangKeluarRoute && ($reqJenis === 'peralatan');
+
+        // Nama label menu menyesuaikan role (Logistik/Kasie vs TRC)
+        $labelMenuDistribusi = ($userRole === 'trc') ? 'Distribusi Bantuan' : 'Distribusi Logistik';
+        $labelMenuPeralatan  = ($userRole === 'trc') ? 'Operasi Peralatan' : 'Penggunaan Peralatan';
 
         // Badge warna berbeda tiap jabatan untuk Top Header Bar
         $roleBadgeStyle = match($userRole) {
@@ -284,26 +95,28 @@
     <!-- MOBILE SIDEBAR BACKDROP OVERLAY                                       -->
     <!-- ===================================================================== -->
     <div id="sidebar-backdrop"
-         class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity duration-200"></div>
+         class="fixed inset-0 bg-slate-950/60 z-40 hidden lg:hidden transition-opacity duration-200"></div>
 
     <!-- ===================================================================== -->
-    <!-- LEFT SIDEBAR MODERN (#0F172A dengan indikator aktif #EA580C)          -->
+    <!-- LEFT SIDEBAR MODERN (#0F172A dengan Mini Icon-Rail Mode w-20)         -->
     <!-- ===================================================================== -->
     <aside id="app-sidebar"
-           class="fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-[#0F172A] text-slate-300 flex flex-col border-r border-slate-800/80 shrink-0 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out">
+           class="fixed lg:sticky top-0 left-0 z-50 h-screen w-72 bg-[#0F172A] text-slate-300 flex flex-col border-r border-slate-800/80 shrink-0 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out">
 
         <!-- Brand / Identitas Instansi di Paling Atas Sidebar -->
-        <div class="h-16 px-5 flex items-center justify-between border-b border-slate-800/90 shrink-0">
-            <a href="{{ Route::has('dashboard') ? route('dashboard') : url('/dashboard') }}" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl bg-[#EA580C] flex items-center justify-center text-white font-black text-base shadow-lg shadow-orange-600/30 group-hover:scale-105 transition-transform">
+        <div class="sidebar-brand-header h-16 px-5 flex items-center justify-between border-b border-slate-800/90 shrink-0 transition-all duration-300">
+            <a href="{{ Route::has('dashboard') ? route('dashboard') : url('/dashboard') }}"
+               class="flex items-center gap-3 group"
+               title="SIMLOG BPBD Kota Cirebon">
+                <div class="w-10 h-10 rounded-xl bg-[#EA580C] flex items-center justify-center text-white font-black text-base shadow-lg shadow-orange-600/30 group-hover:scale-105 transition-transform shrink-0">
                     <span class="material-symbols-outlined text-[22px]">local_shipping</span>
                 </div>
-                <div class="flex flex-col">
+                <div class="sidebar-brand-text flex flex-col overflow-hidden">
                     <div class="flex items-center gap-1.5">
                         <span class="text-base font-black tracking-tight text-white uppercase">SIMLOG</span>
                         <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#EA580C]/20 text-[#EA580C] border border-[#EA580C]/30">BPBD</span>
                     </div>
-                    <span class="text-[11px] font-medium text-slate-400 tracking-wide">BPBD Kota Cirebon</span>
+                    <span class="text-[11px] font-medium text-slate-400 tracking-wide truncate">BPBD Kota Cirebon</span>
                 </div>
             </a>
 
@@ -316,22 +129,24 @@
         </div>
 
         <!-- Daftar Menu Navigasi Dinamis Berdasarkan Role -->
-        <nav class="flex-1 overflow-y-auto sidebar-scroll px-3.5 py-5 space-y-6">
+        <nav class="sidebar-nav flex-1 overflow-y-auto overflow-x-hidden sidebar-scroll px-3.5 py-5 space-y-6 transition-all duration-300">
 
             <!-- 1. MENU UTAMA -->
             @if (in_array($userRole, ['superadmin', 'kasie', 'logistik', 'trc']))
                 <div>
-                    <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <p class="sidebar-section-title px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         Menu Utama
                     </p>
-                    <ul class="space-y-1">
+                    <ul class="space-y-1.5">
                         @if (Route::has('dashboard'))
                             @php $isDashboardActive = request()->routeIs('dashboard') || request()->is('dashboard'); @endphp
                             <li>
                                 <a href="{{ route('dashboard') }}"
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isDashboardActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
-                                    <span class="material-symbols-outlined text-[20px] {{ $isDashboardActive ? 'text-white' : 'text-slate-400' }}">space_dashboard</span>
-                                    <span>Dashboard</span>
+                                   title="Dashboard"
+                                   data-tooltip="Dashboard"
+                                   class="sidebar-link relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 {{ $isDashboardActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
+                                    <span class="sidebar-icon material-symbols-outlined text-[22px] shrink-0 {{ $isDashboardActive ? 'text-white' : 'text-slate-400' }}">space_dashboard</span>
+                                    <span class="sidebar-label truncate flex-1">Dashboard</span>
                                 </a>
                             </li>
                         @endif
@@ -339,57 +154,90 @@
                 </div>
             @endif
 
-            <!-- 2. OPERASIONAL LOGISTIK -->
-            @if (in_array($userRole, ['superadmin', 'kasie', 'logistik', 'trc']))
+            <!-- 2. OPERASIONAL LOGISTIK & PERALATAN (Khusus kasie, logistik, & trc) -->
+            @if (in_array($userRole, ['kasie', 'logistik', 'trc']))
                 <div>
-                    <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                        Operasional Logistik
+                    <p class="sidebar-section-title px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        {{ $userRole === 'trc' ? 'Tugas Lapangan TRC' : 'Operasional Gudang' }}
                     </p>
-                    <ul class="space-y-1">
-                        <!-- Data Barang (Semua Role) -->
+                    <ul class="space-y-1.5">
+                        <!-- Data Barang (kasie, logistik, trc) -->
                         @if (Route::has('barang.index'))
                             @php $isBarangActive = request()->routeIs('barang.*') || request()->is('barang', 'barang/*'); @endphp
                             <li>
                                 <a href="{{ route('barang.index') }}"
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isBarangActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
-                                    <span class="material-symbols-outlined text-[20px] {{ $isBarangActive ? 'text-white' : 'text-slate-400' }}">inventory_2</span>
-                                    <span>Data Barang</span>
+                                   title="Data Barang"
+                                   data-tooltip="Data Barang"
+                                   class="sidebar-link relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 {{ $isBarangActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
+                                    <span class="sidebar-icon material-symbols-outlined text-[22px] shrink-0 {{ $isBarangActive ? 'text-white' : 'text-slate-400' }}">inventory_2</span>
+                                    <span class="sidebar-label truncate flex-1">Data Barang</span>
                                 </a>
                             </li>
                         @endif
 
-                        <!-- Barang Masuk (superadmin, kasie, logistik) -->
-                        @if (in_array($userRole, ['superadmin', 'kasie', 'logistik']) && Route::has('barang-masuk.index'))
+                        <!-- Barang Masuk (kasie, logistik) -->
+                        @if (in_array($userRole, ['kasie', 'logistik']) && Route::has('barang-masuk.index'))
                             @php $isMasukActive = request()->routeIs('barang-masuk.*') || request()->is('barang-masuk', 'barang-masuk/*'); @endphp
                             <li>
                                 <a href="{{ route('barang-masuk.index') }}"
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isMasukActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
-                                    <span class="material-symbols-outlined text-[20px] {{ $isMasukActive ? 'text-white' : 'text-slate-400' }}">move_to_inbox</span>
-                                    <span>Barang Masuk</span>
+                                   title="Barang Masuk"
+                                   data-tooltip="Barang Masuk"
+                                   class="sidebar-link relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 {{ $isMasukActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
+                                    <span class="sidebar-icon material-symbols-outlined text-[22px] shrink-0 {{ $isMasukActive ? 'text-white' : 'text-slate-400' }}">move_to_inbox</span>
+                                    <span class="sidebar-label truncate flex-1">Barang Masuk</span>
                                 </a>
                             </li>
                         @endif
 
-                        <!-- Barang Keluar (Semua Role) -->
+                        <!-- Menu 1 Barang Keluar: Distribusi Logistik / Distribusi Bantuan (?jenis=logistik) -->
                         @if (Route::has('barang-keluar.index'))
-                            @php $isKeluarActive = request()->routeIs('barang-keluar.*') || request()->is('barang-keluar', 'barang-keluar/*'); @endphp
                             <li>
-                                <a href="{{ route('barang-keluar.index') }}"
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isKeluarActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
-                                    <span class="material-symbols-outlined text-[20px] {{ $isKeluarActive ? 'text-white' : 'text-slate-400' }}">outbox</span>
-                                    <span>Barang Keluar</span>
+                                <a href="{{ route('barang-keluar.index', ['jenis' => 'logistik']) }}"
+                                   title="{{ $labelMenuDistribusi }}{{ $badgeDistribusiLogistik > 0 ? ' (' . $badgeDistribusiLogistik . ' Tugas)' : '' }}"
+                                   data-tooltip="{{ $labelMenuDistribusi }}"
+                                   class="sidebar-link relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 {{ $isMenuDistribusiActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
+                                    <span class="sidebar-icon material-symbols-outlined text-[22px] shrink-0 {{ $isMenuDistribusiActive ? 'text-white' : 'text-slate-400' }}">local_shipping</span>
+                                    <span class="sidebar-label truncate flex-1">{{ $labelMenuDistribusi }}</span>
+                                    @if ($badgeDistribusiLogistik > 0)
+                                        <span class="sidebar-badge inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-[11px] font-black leading-none shadow-sm shrink-0 {{ $isMenuDistribusiActive ? 'bg-white text-[#EA580C]' : 'bg-emerald-500 text-white' }}">
+                                            {{ $badgeDistribusiLogistik > 99 ? '99+' : $badgeDistribusiLogistik }}
+                                        </span>
+                                    @endif
+                                </a>
+                            </li>
+
+                            <!-- Menu 2 Barang Keluar: Penggunaan Peralatan / Operasi Peralatan (?jenis=peralatan) -->
+                            <li>
+                                <a href="{{ route('barang-keluar.index', ['jenis' => 'peralatan']) }}"
+                                   title="{{ $labelMenuPeralatan }}{{ $badgePenggunaanPeralatan > 0 ? ' (' . $badgePenggunaanPeralatan . ' Aktif)' : '' }}"
+                                   data-tooltip="{{ $labelMenuPeralatan }}"
+                                   class="sidebar-link relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 {{ $isMenuPeralatanActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
+                                    <span class="sidebar-icon material-symbols-outlined text-[22px] shrink-0 {{ $isMenuPeralatanActive ? 'text-white' : 'text-slate-400' }}">construction</span>
+                                    <span class="sidebar-label truncate flex-1">{{ $labelMenuPeralatan }}</span>
+                                    @if ($badgePenggunaanPeralatan > 0)
+                                        <span class="sidebar-badge inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-[11px] font-black leading-none shadow-sm shrink-0 {{ $isMenuPeralatanActive ? 'bg-white text-[#EA580C]' : 'bg-indigo-500 text-white' }}">
+                                            {{ $badgePenggunaanPeralatan > 99 ? '99+' : $badgePenggunaanPeralatan }}
+                                        </span>
+                                    @endif
                                 </a>
                             </li>
                         @endif
 
-                        <!-- Pemutihan Barang (superadmin, kasie, logistik) -->
-                        @if (in_array($userRole, ['superadmin', 'kasie', 'logistik']) && Route::has('pemutihan.index'))
+                        <!-- Pemutihan Barang (kasie, logistik + Badge Notifikasi Ala WhatsApp) -->
+                        @if (in_array($userRole, ['kasie', 'logistik']) && Route::has('pemutihan.index'))
                             @php $isPemutihanActive = request()->routeIs('pemutihan.*') || request()->is('pemutihan', 'pemutihan/*'); @endphp
                             <li>
                                 <a href="{{ route('pemutihan.index') }}"
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isPemutihanActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
-                                    <span class="material-symbols-outlined text-[20px] {{ $isPemutihanActive ? 'text-white' : 'text-slate-400' }}">auto_delete</span>
-                                    <span>Pemutihan Barang</span>
+                                   title="Pemutihan Barang{{ $badgePemutihanCount > 0 ? ' (' . $badgePemutihanCount . ' Menunggu Persetujuan)' : '' }}"
+                                   data-tooltip="Pemutihan Barang"
+                                   class="sidebar-link relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 {{ $isPemutihanActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
+                                    <span class="sidebar-icon material-symbols-outlined text-[22px] shrink-0 {{ $isPemutihanActive ? 'text-white' : 'text-slate-400' }}">auto_delete</span>
+                                    <span class="sidebar-label truncate flex-1">Pemutihan Barang</span>
+                                    @if ($badgePemutihanCount > 0)
+                                        <span class="sidebar-badge inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-[11px] font-black leading-none shadow-sm shrink-0 {{ $isPemutihanActive ? 'bg-white text-[#EA580C]' : 'bg-amber-500 text-slate-950' }}">
+                                            {{ $badgePemutihanCount > 99 ? '99+' : $badgePemutihanCount }}
+                                        </span>
+                                    @endif
                                 </a>
                             </li>
                         @endif
@@ -397,20 +245,45 @@
                 </div>
             @endif
 
-            <!-- 3. LAPORAN & PENGAWASAN (superadmin, kasie, logistik) -->
-            @if (in_array($userRole, ['superadmin', 'kasie', 'logistik']))
+            <!-- 3. LAPORAN & PENGAWASAN (Laporan Mutasi khusus kasie & logistik) -->
+            @if (in_array($userRole, ['kasie', 'logistik']))
                 <div>
-                    <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                        Laporan &amp; Pengawasan
+                    <p class="sidebar-section-title px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        Laporan &amp; Evaluasi
                     </p>
-                    <ul class="space-y-1">
+                    <ul class="space-y-1.5">
                         @if (Route::has('laporan.index'))
                             @php $isLaporanActive = request()->routeIs('laporan.*') || request()->is('laporan*'); @endphp
                             <li>
                                 <a href="{{ route('laporan.index') }}"
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isLaporanActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
-                                    <span class="material-symbols-outlined text-[20px] {{ $isLaporanActive ? 'text-white' : 'text-slate-400' }}">assessment</span>
-                                    <span>Laporan Mutasi</span>
+                                   title="Laporan Mutasi"
+                                   data-tooltip="Laporan Mutasi"
+                                   class="sidebar-link relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 {{ $isLaporanActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
+                                    <span class="sidebar-icon material-symbols-outlined text-[22px] shrink-0 {{ $isLaporanActive ? 'text-white' : 'text-slate-400' }}">assessment</span>
+                                    <span class="sidebar-label truncate flex-1">Laporan Mutasi</span>
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
+            @endif
+
+            <!-- 4. ADMINISTRASI & AUDIT SISTEM (Khusus superadmin) -->
+            @if ($userRole === 'superadmin')
+                <div>
+                    <p class="sidebar-section-title px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        Administrasi Sistem
+                    </p>
+                    <ul class="space-y-1.5">
+                        @if (Route::has('users.index'))
+                            @php $isUsersActive = request()->routeIs('users.*') || request()->is('users*'); @endphp
+                            <li>
+                                <a href="{{ route('users.index') }}"
+                                   title="Manajemen Akun"
+                                   data-tooltip="Manajemen Akun"
+                                   class="sidebar-link relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 {{ $isUsersActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
+                                    <span class="sidebar-icon material-symbols-outlined text-[22px] shrink-0 {{ $isUsersActive ? 'text-white' : 'text-slate-400' }}">manage_accounts</span>
+                                    <span class="sidebar-label truncate flex-1">Manajemen Akun</span>
                                 </a>
                             </li>
                         @endif
@@ -419,30 +292,11 @@
                             @php $isLogsActive = request()->routeIs('activity-logs.*') || request()->is('activity-logs*'); @endphp
                             <li>
                                 <a href="{{ route('activity-logs.index') }}"
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isLogsActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
-                                    <span class="material-symbols-outlined text-[20px] {{ $isLogsActive ? 'text-white' : 'text-slate-400' }}">history</span>
-                                    <span>Log Aktivitas</span>
-                                </a>
-                            </li>
-                        @endif
-                    </ul>
-                </div>
-            @endif
-
-            <!-- 4. ADMINISTRASI SISTEM (Khusus superadmin) -->
-            @if ($userRole === 'superadmin')
-                <div>
-                    <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                        Administrasi Sistem
-                    </p>
-                    <ul class="space-y-1">
-                        @if (Route::has('users.index'))
-                            @php $isUsersActive = request()->routeIs('users.*') || request()->is('users*'); @endphp
-                            <li>
-                                <a href="{{ route('users.index') }}"
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isUsersActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
-                                    <span class="material-symbols-outlined text-[20px] {{ $isUsersActive ? 'text-white' : 'text-slate-400' }}">manage_accounts</span>
-                                    <span>Manajemen Akun</span>
+                                   title="Log Aktivitas Sistem"
+                                   data-tooltip="Log Aktivitas"
+                                   class="sidebar-link relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 {{ $isLogsActive ? 'bg-[#EA580C] text-white shadow-md shadow-orange-600/25' : 'text-slate-300 hover:bg-slate-800/75 hover:text-white' }}">
+                                    <span class="sidebar-icon material-symbols-outlined text-[22px] shrink-0 {{ $isLogsActive ? 'text-white' : 'text-slate-400' }}">history</span>
+                                    <span class="sidebar-label truncate flex-1">Log Aktivitas</span>
                                 </a>
                             </li>
                         @endif
@@ -455,11 +309,11 @@
         <!-- Bagian Bawah Sidebar: Status Posko Induk -->
         <div class="p-4 border-t border-slate-800/90 bg-slate-950/40 shrink-0">
             <div class="flex items-center justify-between text-xs">
-                <span class="flex items-center gap-2 text-emerald-400 font-semibold">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Posko Induk Aktif
+                <span class="sidebar-footer-dot flex items-center gap-2 text-emerald-400 font-semibold" title="Posko Induk Aktif">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                    <span class="sidebar-footer-text">Posko Induk Aktif</span>
                 </span>
-                <span class="text-[11px] font-mono text-slate-500">v2.5-RBAC</span>
+                <span class="sidebar-footer-text text-[11px] font-mono text-slate-500">v2.7-RBAC</span>
             </div>
         </div>
     </aside>
@@ -469,20 +323,41 @@
     <!-- ===================================================================== -->
     <div class="flex-1 flex flex-col min-w-0 min-h-screen">
 
-        <!-- Top Header Bar Minimalis -->
-        <header class="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 lg:px-8 flex items-center justify-between gap-4 shrink-0">
-            <!-- Kiri: Tombol Toggle Sidebar (Mobile) & Judul Halaman Aktif -->
+        <!-- Top Header Bar Minimalis (Solid White untuk Performa Render Mobile Optimal) -->
+        <header class="sticky top-0 z-30 h-16 bg-white border-b border-slate-200 px-4 lg:px-8 flex items-center justify-between gap-4 shrink-0">
+            <!-- Kiri: Tombol Toggle Sidebar (Mobile Drawer & Desktop Mini Icon-Rail) & Judul Halaman Aktif -->
             <div class="flex items-center gap-3 min-w-0">
+                <!-- Tombol Hamburger Mobile Drawer -->
                 <button id="btn-open-sidebar" type="button"
                         class="lg:hidden inline-flex items-center justify-center p-2 rounded-xl text-slate-700 hover:bg-slate-100 hover:text-[#EA580C] transition-colors"
-                        aria-label="Buka Navigasi">
+                        aria-label="Buka Navigasi Mobile">
                     <span class="material-symbols-outlined text-[24px]">menu</span>
                 </button>
+
+                <!-- Tombol Hamburger Desktop Collapsible Sidebar (Mini Icon-Rail) -->
+                <button id="btn-toggle-desktop-sidebar" type="button"
+                        class="hidden lg:inline-flex items-center justify-center p-2 rounded-xl border border-slate-200/80 bg-slate-50/70 text-slate-700 hover:bg-orange-50 hover:text-[#EA580C] hover:border-orange-200 transition-colors"
+                        title="Ciutkan / Lebarkan Menu Sidebar (Mode Icon-Rail)"
+                        aria-label="Toggle Sidebar Desktop">
+                    <span id="desktop-sidebar-icon" class="material-symbols-outlined text-[22px]">menu_open</span>
+                </button>
+
                 <div class="flex items-center gap-2.5 truncate">
                     <span class="hidden sm:inline-block w-1.5 h-5 rounded-full bg-[#EA580C]"></span>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900 truncate">
-                        @yield('title', 'Dashboard')
-                    </h2>
+                    <div class="truncate">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 truncate leading-tight">
+                            @hasSection('header-title')
+                                @yield('header-title')
+                            @else
+                                @yield('title', 'Dashboard')
+                            @endif
+                        </h2>
+                        @hasSection('header-subtitle')
+                            <p class="hidden md:block text-[11px] text-slate-500 truncate">
+                                @yield('header-subtitle')
+                            </p>
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -523,37 +398,59 @@
 
         <!-- Footer Ringkas -->
         <footer class="w-full bg-white border-t border-slate-200/80 py-4 px-4 lg:px-8 mt-auto">
-            <div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+            <div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
                 <span>&copy; {{ date('Y') }} <strong>BPBD Kota Cirebon</strong> — Sistem Informasi Manajemen Logistik &amp; Peralatan Bencana</span>
-                <span class="font-medium text-slate-400">SIMLOG v2.5-RBAC</span>
+                <span class="font-medium text-slate-600">SIMLOG v2.7-RBAC</span>
             </div>
         </footer>
 
     </div>
 
-    <!-- Script Toggle Drawer Sidebar Mobile -->
+    <!-- Script Toggle Drawer Sidebar Mobile & Mini Icon-Rail Desktop -->
     <script>
         (function () {
-            const sidebar = document.getElementById('app-sidebar');
+            const sidebar  = document.getElementById('app-sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
-            const btnOpen = document.getElementById('btn-open-sidebar');
+            const btnOpen  = document.getElementById('btn-open-sidebar');
             const btnClose = document.getElementById('btn-close-sidebar');
+            const btnDesktopToggle   = document.getElementById('btn-toggle-desktop-sidebar');
+            const desktopSidebarIcon = document.getElementById('desktop-sidebar-icon');
 
-            function openSidebar() {
+            function openMobileSidebar() {
                 if (!sidebar || !backdrop) return;
                 sidebar.classList.remove('-translate-x-full');
                 backdrop.classList.remove('hidden');
             }
 
-            function closeSidebar() {
+            function closeMobileSidebar() {
                 if (!sidebar || !backdrop) return;
                 sidebar.classList.add('-translate-x-full');
                 backdrop.classList.add('hidden');
             }
 
-            if (btnOpen) btnOpen.addEventListener('click', openSidebar);
-            if (btnClose) btnClose.addEventListener('click', closeSidebar);
-            if (backdrop) backdrop.addEventListener('click', closeSidebar);
+            function syncDesktopIcon() {
+                if (!desktopSidebarIcon) return;
+                const isCollapsed = document.documentElement.classList.contains('sidebar-collapsed');
+                desktopSidebarIcon.textContent = isCollapsed ? 'menu' : 'menu_open';
+            }
+
+            function toggleDesktopSidebar() {
+                const isCollapsed = document.documentElement.classList.toggle('sidebar-collapsed');
+                try {
+                    localStorage.setItem('simlog_sidebar_collapsed', isCollapsed ? '1' : '0');
+                } catch (e) {}
+                syncDesktopIcon();
+                setTimeout(function () {
+                    window.dispatchEvent(new Event('resize'));
+                }, 310);
+            }
+
+            if (btnOpen) btnOpen.addEventListener('click', openMobileSidebar);
+            if (btnClose) btnClose.addEventListener('click', closeMobileSidebar);
+            if (backdrop) backdrop.addEventListener('click', closeMobileSidebar);
+            if (btnDesktopToggle) btnDesktopToggle.addEventListener('click', toggleDesktopSidebar);
+
+            syncDesktopIcon();
         })();
     </script>
     @stack('scripts')

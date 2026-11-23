@@ -24,6 +24,7 @@ class Kategori extends Model
      */
     protected $fillable = [
         'nama_kategori',
+        'kode_prefix',
     ];
 
     /**
@@ -38,5 +39,21 @@ class Kategori extends Model
     public function barangs()
     {
         return $this->hasMany(Barang::class, 'id_kategori', 'id_kategori');
+    }
+
+    /**
+     * Mendapatkan jenis barang ('logistik' atau 'peralatan') dari kategori ini.
+     */
+    public function getJenisBarangAttribute(): string
+    {
+        return Barang::detectJenisByKategori($this->nama_kategori);
+    }
+
+    /**
+     * Cek apakah kategori ini termasuk kelompok Peralatan (Pinjam-Kembali).
+     */
+    public function isPeralatan(): bool
+    {
+        return $this->jenis_barang === 'peralatan';
     }
 }

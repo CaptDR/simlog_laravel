@@ -5,7 +5,7 @@
 @section('content')
     @php
         $userRole = strtolower(auth()->user()->role ?? session('role', ''));
-        $canManageMasuk = in_array($userRole, ['superadmin', 'logistik']);
+        $canManageMasuk = ($userRole === 'logistik');
     @endphp
 
     <!-- Header Area dengan Tombol Aksi Utama (+ Catat Barang Masuk) -->
@@ -210,7 +210,6 @@
                             <th class="px-space-md py-space-md text-left font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Sumber Bantuan</th>
                             <th class="px-space-md py-space-md text-center font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Bukti / BAST</th>
                             <th class="px-space-md py-space-md text-left font-label-md text-label-md text-secondary uppercase tracking-wider">Keterangan</th>
-                            <th class="px-space-md py-space-md text-center font-label-md text-label-md text-secondary uppercase tracking-wider whitespace-nowrap">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant">
@@ -251,6 +250,10 @@
                                         @if ($brg && $brg->gambar && file_exists(public_path('uploads/barang/' . $brg->gambar)))
                                             <img src="{{ asset('uploads/barang/' . $brg->gambar) }}"
                                                  alt="{{ $brg->nama_barang }}"
+                                                 width="44"
+                                                 height="44"
+                                                 loading="lazy"
+                                                 decoding="async"
                                                  class="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0"/>
                                         @else
                                             <div class="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200/80 flex items-center justify-center text-slate-400 shrink-0">
@@ -311,41 +314,29 @@
                                     </span>
                                 </td>
 
-                                <!-- Bukti / BAST -->
+                                <!-- Bukti / BAST (Buka Modal Pratinjau Tengah Layar) -->
                                 <td class="px-space-md py-space-md text-center whitespace-nowrap">
                                     @if ($masuk->bukti_dokumen)
-                                        <a href="{{ asset('uploads/barang_masuk/' . $masuk->bukti_dokumen) }}"
-                                           target="_blank"
-                                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-label-md text-label-md transition-colors">
-                                            <span class="material-symbols-outlined text-[15px]">attach_file</span>
+                                        @php
+                                            $bastUrl = asset('uploads/barang_masuk/' . $masuk->bukti_dokumen);
+                                            $bastExt = strtolower(pathinfo($masuk->bukti_dokumen, PATHINFO_EXTENSION));
+                                            $isPdf   = $bastExt === 'pdf';
+                                            $bastTitle = ($brg->nama_barang ?? 'Barang Masuk') . ' — ' . \Carbon\Carbon::parse($masuk->tanggal_masuk)->translatedFormat('d M Y');
+                                        @endphp
+                                        <button type="button"
+                                                onclick="openBastPreviewModal('{{ $bastUrl }}', '{{ addslashes($bastTitle) }}', {{ $isPdf ? 'true' : 'false' }})"
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-600 text-xs font-extrabold transition shadow-2xs">
+                                            <span class="material-symbols-outlined text-[16px]">visibility</span>
                                             <span>Lihat BAST</span>
-                                        </a>
+                                        </button>
                                     @else
                                         <span class="font-body-sm text-body-sm text-secondary italic">—</span>
                                     @endif
                                 </td>
 
                                 <!-- Keterangan -->
-                                <td class="px-space-md py-space-md font-body-sm text-body-sm text-secondary max-w-[220px]">
+                                <td class="px-space-md py-space-md font-body-sm text-body-sm text-secondary max-w-[240px]">
                                     {{ $masuk->keterangan ?: '—' }}
-                                </td>
-
-                                <!-- Aksi -->
-                                <td class="px-space-md py-space-md text-center whitespace-nowrap">
-                                    @if ($canManageMasuk)
-                                        <form action="{{ route('barang-masuk.destroy', $masuk->id_masuk) }}" method="POST" class="inline-block"
-                                              onsubmit="return confirm('PERINGATAN ROLLBACK:\n\nApakah Anda yakin ingin menghapus transaksi barang masuk ini?\nStok barang akan otomatis DIKURANGI kembali sebanyak {{ $masuk->jumlah_masuk }}.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-error/10 hover:bg-error text-error hover:text-white transition-colors text-xs font-bold"
-                                                    title="Hapus & Rollback Stok">
-                                                <span class="material-symbols-outlined text-[16px]">delete</span>
-                                            </button>
-                                        </form>
-                                    @else
-                                        <span class="text-xs text-secondary italic">Hanya Lihat</span>
-                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -360,4 +351,104 @@
             @endif
         @endif
     </section>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL POP-UP PRATINJAU DOKUMEN BAST (GAMBAR / PDF DI TENGAH LAYAR)    -->
+    <!-- ===================================================================== -->
+    <div id="bastPreviewModal"
+         class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4"
+         onclick="if (event.target === this) closeBastPreviewModal()">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-orange-500/20 border border-orange-500/40 text-orange-400 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[20px]">description</span>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="text-sm font-extrabold truncate">Pratinjau Dokumen Bukti / BAST Penerimaan</h3>
+                        <p id="bastModalSubtitle" class="text-[11px] text-slate-400 truncate">-</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a id="bastDownloadLink"
+                       href="#"
+                       download
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition">
+                        <span class="material-symbols-outlined text-[16px]">download</span>
+                        <span>Unduh</span>
+                    </a>
+                    <button type="button"
+                            onclick="closeBastPreviewModal()"
+                            class="w-8 h-8 rounded-xl bg-white/10 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center transition">
+                        <span class="material-symbols-outlined text-[19px]">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Body (Container Gambar / PDF Iframe) -->
+            <div class="p-4 sm:p-5 bg-slate-100 flex-1 overflow-y-auto flex items-center justify-center min-h-[340px]">
+                <img id="bastPreviewImage"
+                     src=""
+                     alt="Pratinjau BAST"
+                     class="hidden max-h-[72vh] w-auto max-w-full rounded-xl border border-slate-200 shadow-md object-contain bg-white"/>
+
+                <iframe id="bastPreviewPdf"
+                        src=""
+                        title="Pratinjau Dokumen PDF BAST"
+                        class="hidden w-full h-[72vh] rounded-xl border border-slate-200 bg-white shadow-md"></iframe>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-5 py-3 bg-white border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 shrink-0">
+                <span>Dokumen Bukti Serah Terima (BAST) Resmi SIMLOG BPBD Kota Cirebon</span>
+                <button type="button"
+                        onclick="closeBastPreviewModal()"
+                        class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition">
+                    Tutup Pratinjau
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+<script>
+    function openBastPreviewModal(fileUrl, titleText, isPdf) {
+        const modal       = document.getElementById('bastPreviewModal');
+        const subtitle    = document.getElementById('bastModalSubtitle');
+        const downloadLnk = document.getElementById('bastDownloadLink');
+        const imgEl       = document.getElementById('bastPreviewImage');
+        const pdfEl       = document.getElementById('bastPreviewPdf');
+
+        subtitle.textContent = titleText || 'Bukti Penerimaan Barang Masuk';
+        downloadLnk.href     = fileUrl;
+
+        if (isPdf) {
+            imgEl.classList.add('hidden');
+            imgEl.src = '';
+            pdfEl.src = fileUrl;
+            pdfEl.classList.remove('hidden');
+        } else {
+            pdfEl.classList.add('hidden');
+            pdfEl.src = '';
+            imgEl.src = fileUrl;
+            imgEl.classList.remove('hidden');
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeBastPreviewModal() {
+        const modal = document.getElementById('bastPreviewModal');
+        const imgEl = document.getElementById('bastPreviewImage');
+        const pdfEl = document.getElementById('bastPreviewPdf');
+
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        imgEl.src = '';
+        pdfEl.src = '';
+    }
+</script>
+@endpush

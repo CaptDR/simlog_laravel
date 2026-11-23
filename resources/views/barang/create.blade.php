@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                <!-- 2. Kategori Barang -->
+                <!-- 2. Kategori Barang (Otomatis Menentukan Jenis: Logistik Habis Pakai vs Peralatan Pinjam-Kembali) -->
                 <div>
                     <label for="id_kategori" class="form-label">Kategori Barang <span class="text-error">*</span></label>
                     <div class="input-icon-wrapper select-wrapper">
@@ -90,17 +90,30 @@
                         <select
                             id="id_kategori"
                             name="id_kategori"
+                            onchange="syncJenisBarangIndicator(this)"
                             class="form-select {{ $errors->has('id_kategori') ? 'is-invalid' : '' }}"
                             required
                         >
-                            <option value="" disabled {{ old('id_kategori') ? '' : 'selected' }}>— Pilih Kategori Logistik —</option>
-                            @foreach($kategori as $kat)
-                                <option value="{{ $kat->id_kategori }}" {{ old('id_kategori') == $kat->id_kategori ? 'selected' : '' }}>
-                                    {{ $kat->nama_kategori }} ({{ $kat->kode_prefix }})
-                                </option>
-                            @endforeach
+                            <option value="" disabled {{ old('id_kategori') ? '' : 'selected' }}>— Pilih Kategori Logistik / Peralatan —</option>
+                            <optgroup label="Logistik (Habis Pakai)">
+                                @foreach($kategori->filter(fn($k) => !$k->isPeralatan()) as $kat)
+                                    <option value="{{ $kat->id_kategori }}" data-jenis="logistik" {{ old('id_kategori') == $kat->id_kategori ? 'selected' : '' }}>
+                                        {{ $kat->nama_kategori }} ({{ $kat->kode_prefix }})
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="Peralatan (Pinjam-Kembali Operasi)">
+                                @foreach($kategori->filter(fn($k) => $k->isPeralatan()) as $kat)
+                                    <option value="{{ $kat->id_kategori }}" data-jenis="peralatan" {{ old('id_kategori') == $kat->id_kategori ? 'selected' : '' }}>
+                                        {{ $kat->nama_kategori }} ({{ $kat->kode_prefix }})
+                                    </option>
+                                @endforeach
+                            </optgroup>
                         </select>
                     </div>
+                    <p id="jenisBarangHint" class="mt-1 text-xs font-semibold text-slate-500">
+                        Sistem otomatis menetapkan alur <strong>Logistik (Habis Pakai)</strong> atau <strong>Peralatan (Pinjam-Kembali)</strong> sesuai kategori.
+                    </p>
                 </div>
 
                 <!-- 3. Satuan -->
@@ -181,7 +194,7 @@
                 <!-- 7. Upload Foto Barang dengan Pratinjau -->
                 <div class="md:col-span-2">
                     <label for="gambar" class="form-label">
-                        Foto Barang <span class="text-secondary font-normal normal-case">(Opsional — JPG, PNG, WEBP maks. 2 MB)</span>
+                        Foto Barang <span class="text-secondary font-normal normal-case">(Opsional — JPG, JPEG, PNG, WEBP maks. 5 MB)</span>
                     </label>
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <div id="preview-wrapper" class="w-20 h-20 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
@@ -243,5 +256,23 @@
                 if (placeholder) placeholder.classList.remove('hidden');
             }
         }
+
+        function syncJenisBarangIndicator(selectEl) {
+            const hint = document.getElementById('jenisBarangHint');
+            if (!hint || !selectEl) return;
+            const opt = selectEl.options[selectEl.selectedIndex];
+            const jenis = opt ? opt.getAttribute('data-jenis') : null;
+            if (jenis === 'peralatan') {
+                hint.className = 'mt-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200';
+                hint.innerHTML = '<span class="material-symbols-outlined text-[14px]">build</span> Alur Otomatis: Peralatan (Pinjam-Kembali Operasi)';
+            } else if (jenis === 'logistik') {
+                hint.className = 'mt-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-50 text-orange-700 border border-orange-200';
+                hint.innerHTML = '<span class="material-symbols-outlined text-[14px]">inventory_2</span> Alur Otomatis: Logistik (Habis Pakai)';
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const sel = document.getElementById('id_kategori');
+            if (sel && sel.value) syncJenisBarangIndicator(sel);
+        });
     </script>
 @endpush

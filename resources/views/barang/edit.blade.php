@@ -85,17 +85,26 @@
                     </div>
                 </div>
 
-                <!-- 2. Kategori Barang -->
+                <!-- 2. Kategori Barang (Otomatis Menentukan Jenis: Logistik Habis Pakai vs Peralatan Pinjam-Kembali) -->
                 <div>
                     <label for="id_kategori" class="form-label">Kategori Barang <span class="text-error">*</span></label>
                     <div class="input-icon-wrapper select-wrapper">
                         <span class="input-icon material-symbols-outlined">category</span>
                         <select id="id_kategori" name="id_kategori" required class="form-select {{ $errors->has('id_kategori') ? 'is-invalid' : '' }}">
-                            @foreach($kategori as $kat)
-                                <option value="{{ $kat->id_kategori }}" {{ old('id_kategori', $barang->id_kategori) == $kat->id_kategori ? 'selected' : '' }}>
-                                    {{ $kat->nama_kategori }} ({{ $kat->kode_prefix }})
-                                </option>
-                            @endforeach
+                            <optgroup label="Logistik (Habis Pakai)">
+                                @foreach($kategori->filter(fn($k) => !$k->isPeralatan()) as $kat)
+                                    <option value="{{ $kat->id_kategori }}" {{ old('id_kategori', $barang->id_kategori) == $kat->id_kategori ? 'selected' : '' }}>
+                                        {{ $kat->nama_kategori }} ({{ $kat->kode_prefix }})
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="Peralatan (Pinjam-Kembali Operasi)">
+                                @foreach($kategori->filter(fn($k) => $k->isPeralatan()) as $kat)
+                                    <option value="{{ $kat->id_kategori }}" {{ old('id_kategori', $barang->id_kategori) == $kat->id_kategori ? 'selected' : '' }}>
+                                        {{ $kat->nama_kategori }} ({{ $kat->kode_prefix }})
+                                    </option>
+                                @endforeach
+                            </optgroup>
                         </select>
                     </div>
                 </div>

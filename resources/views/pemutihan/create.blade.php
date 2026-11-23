@@ -121,7 +121,7 @@
                 <!-- 4. Upload Bukti Foto -->
                 <div class="md:col-span-2">
                     <label for="bukti_foto" class="form-label">
-                        Upload Bukti Foto Fisik / Berita Acara <span class="text-secondary font-normal normal-case">(Opsional — JPG, PNG, WEBP maks. 4 MB)</span>
+                        Upload Bukti Foto Fisik / Berita Acara <span class="text-secondary font-normal normal-case">(Opsional — JPG, JPEG, PNG, WEBP maks. 5 MB)</span>
                     </label>
                     <div class="form-file-wrapper">
                         <span class="material-symbols-outlined text-[#EA580C] text-[22px] shrink-0">add_a_photo</span>
