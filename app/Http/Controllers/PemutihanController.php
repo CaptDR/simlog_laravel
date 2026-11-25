@@ -81,8 +81,8 @@ class PemutihanController extends Controller
             'jumlah'     => 'required|integer|min:1',
             'alasan'     => 'required|in:Kadaluarsa,Rusak Berat,Hilang/Susut',
             'keterangan' => 'required|string|max:1000',
-            'bukti_foto' => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'foto'       => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'bukti_foto' => 'nullable|file|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'foto'       => 'nullable|file|image|mimes:jpeg,jpg,png,webp|max:2048',
         ], [
             'barang_id.required'  => 'Barang wajib dipilih.',
             'barang_id.exists'    => 'Barang yang dipilih tidak valid.',
@@ -91,12 +91,12 @@ class PemutihanController extends Controller
             'alasan.required'     => 'Alasan pemutihan wajib dipilih.',
             'alasan.in'           => 'Pilihan alasan pemutihan tidak valid.',
             'keterangan.required' => 'Keterangan / kronologi wajib diisi.',
-            'bukti_foto.image'    => 'Bukti foto harus berupa gambar.',
-            'bukti_foto.mimes'    => 'Format bukti foto harus JPG, JPEG, PNG, atau WEBP.',
-            'bukti_foto.max'      => 'Ukuran bukti foto maksimal 5 MB.',
-            'foto.image'          => 'Bukti foto harus berupa gambar.',
-            'foto.mimes'          => 'Format bukti foto harus JPG, JPEG, PNG, atau WEBP.',
-            'foto.max'            => 'Ukuran bukti foto maksimal 5 MB.',
+            'bukti_foto.image'    => 'Bukti foto harus berupa gambar asli.',
+            'bukti_foto.mimes'    => 'Format bukti foto harus JPEG, JPG, PNG, atau WEBP.',
+            'bukti_foto.max'      => 'Ukuran bukti foto maksimal 2 MB (2048 KB).',
+            'foto.image'          => 'Bukti foto harus berupa gambar asli.',
+            'foto.mimes'          => 'Format bukti foto harus JPEG, JPG, PNG, atau WEBP.',
+            'foto.max'            => 'Ukuran bukti foto maksimal 2 MB (2048 KB).',
         ]);
 
         $barang = Barang::findOrFail($request->barang_id);
@@ -119,12 +119,15 @@ class PemutihanController extends Controller
         $nomor         = $last ? ((int) substr($last->kode_pemutihan, -4)) + 1 : 1;
         $kodePemutihan = $awalan . str_pad($nomor, 4, '0', STR_PAD_LEFT);
 
-        // Upload bukti foto jika ada
+        // Upload bukti foto dengan nama acak aman (Anti-Double Extension)
         $namaFoto = null;
         $uploadedFoto = $request->file('bukti_foto') ?? $request->file('foto');
         if ($uploadedFoto) {
-            $ext       = strtolower($uploadedFoto->extension() ?: $uploadedFoto->getClientOriginalExtension());
-            $namaFoto  = time() . '_' . uniqid() . '.' . $ext;
+            $ext = strtolower($uploadedFoto->extension() ?: '');
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                $ext = 'jpg';
+            }
+            $namaFoto  = 'pmth_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
             $uploadDir = public_path('uploads/pemutihan');
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);

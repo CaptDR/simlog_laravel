@@ -19,12 +19,12 @@ use App\Http\Controllers\ProfileController;
 */
 
 // ==========================================
-// Rute Autentikasi (Login & Logout)
+// Rute Autentikasi (Login dengan Rate Limiter Anti-Brute-Force & Logout)
 // ==========================================
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [AuthController::class, 'showLoginForm']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.attempt');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 // ==========================================
 // Group A: Khusus Petugas Logistik (auth + role:logistik)

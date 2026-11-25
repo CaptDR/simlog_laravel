@@ -698,7 +698,7 @@
                                     <span id="cameraBtnText">Buka Kamera Lokasi &amp; Ambil Foto Bukti</span>
                                 </label>
                                 <p class="text-[10px] text-slate-500 font-medium">
-                                    Otomatis mengaktifkan kamera belakang (`capture="environment"`) &bull; Maks. 5 MB
+                                    Otomatis mengaktifkan kamera belakang (`capture="environment"`) &bull; Maks. 2 MB
                                 </p>
                             </div>
                         </div>

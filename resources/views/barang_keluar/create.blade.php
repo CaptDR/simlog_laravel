@@ -477,6 +477,15 @@
     const CATALOG_DATA = @json($catalogJson);
     let selectedItems = {}; // { barangId: qty }
 
+    function escapeHtml(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     function showClientError(msg) {
         const box = document.getElementById('clientValidationAlert');
         const txt = document.getElementById('clientValidationText');
@@ -568,14 +577,17 @@
             const item = CATALOG_DATA[barangId];
             const qty  = selectedItems[barangId];
             sumUnits  += qty;
+            const safeNama = escapeHtml(item.nama);
+            const safeKat  = escapeHtml(item.kategori);
+            const safeSat  = escapeHtml(item.satuan);
 
             html += `
                 <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 flex items-center justify-between gap-2.5">
                     <input type="hidden" name="items[${idx}][barang_id]" value="${item.id}">
                     <div class="min-w-0 flex-1">
-                        <p class="text-xs font-extrabold text-slate-900 truncate" title="${item.nama}">${item.nama}</p>
+                        <p class="text-xs font-extrabold text-slate-900 truncate" title="${safeNama}">${safeNama}</p>
                         <p class="text-[11px] text-slate-500 mt-0.5">
-                            ${item.kategori} &bull; Tersedia: <strong class="text-slate-700">${item.stok} ${item.satuan}</strong>
+                            ${safeKat} &bull; Tersedia: <strong class="text-slate-700">${item.stok} ${safeSat}</strong>
                         </p>
                     </div>
 
@@ -662,18 +674,21 @@
             const item = CATALOG_DATA[barangId];
             const qty  = selectedItems[barangId];
             const sisa = item.stok - qty;
+            const safeNama = escapeHtml(item.nama);
+            const safeKat  = escapeHtml(item.kategori);
+            const safeSat  = escapeHtml(item.satuan);
 
             tbodyHtml += `
                 <tr>
                     <td class="py-2.5 px-3">
-                        <p class="font-bold text-slate-900">${item.nama}</p>
-                        <p class="text-[10px] text-slate-500">${item.kategori}</p>
+                        <p class="font-bold text-slate-900">${safeNama}</p>
+                        <p class="text-[10px] text-slate-500">${safeKat}</p>
                     </td>
                     <td class="py-2.5 px-3 text-center font-extrabold text-orange-600">
-                        ${qty} ${item.satuan}
+                        ${qty} ${safeSat}
                     </td>
                     <td class="py-2.5 px-3 text-right font-semibold text-slate-600">
-                        ${sisa} ${item.satuan}
+                        ${sisa} ${safeSat}
                     </td>
                 </tr>
             `;

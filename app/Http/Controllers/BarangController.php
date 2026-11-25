@@ -69,8 +69,8 @@ class BarangController extends Controller
             'merk'         => 'nullable|string|max:100',
             'kondisi'      => 'required|in:Baik,Rusak Ringan,Dalam Perbaikan,Rusak Berat',
             'stok_minimum' => 'nullable|integer|min:0',
-            'gambar'       => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'foto'         => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gambar'       => 'nullable|file|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'foto'         => 'nullable|file|image|mimes:jpeg,jpg,png,webp|max:2048',
         ], [
             'nama_barang.required' => 'Nama barang wajib diisi.',
             'id_kategori.required' => 'Kategori wajib dipilih.',
@@ -79,12 +79,12 @@ class BarangController extends Controller
             'kondisi.required'     => 'Kondisi barang wajib dipilih.',
             'kondisi.in'           => 'Pilihan kondisi barang tidak valid.',
             'stok_minimum.min'     => 'Stok minimum tidak boleh negatif.',
-            'gambar.image'         => 'File yang diunggah harus berupa gambar.',
-            'gambar.mimes'         => 'Format foto barang harus JPG, JPEG, PNG, atau WEBP.',
-            'gambar.max'           => 'Ukuran foto barang maksimal 5 MB.',
-            'foto.image'           => 'File yang diunggah harus berupa gambar.',
-            'foto.mimes'           => 'Format foto barang harus JPG, JPEG, PNG, atau WEBP.',
-            'foto.max'             => 'Ukuran foto barang maksimal 5 MB.',
+            'gambar.image'         => 'File yang diunggah harus berupa gambar asli.',
+            'gambar.mimes'         => 'Format foto barang harus JPEG, JPG, PNG, atau WEBP.',
+            'gambar.max'           => 'Ukuran foto barang maksimal 2 MB (2048 KB).',
+            'foto.image'           => 'File yang diunggah harus berupa gambar asli.',
+            'foto.mimes'           => 'Format foto barang harus JPEG, JPG, PNG, atau WEBP.',
+            'foto.max'             => 'Ukuran foto barang maksimal 2 MB (2048 KB).',
         ]);
 
         // ===== AUTO-NUMBERING KODE BARANG =====
@@ -100,12 +100,15 @@ class BarangController extends Controller
         $nomorUrut  = str_pad($nomor, 4, '0', STR_PAD_LEFT);
         $kodeBarang = $prefix . '-' . $yymm . '-' . $nomorUrut;
 
-        // ===== UPLOAD FOTO BARANG (JIKA ADA) =====
+        // ===== UPLOAD FOTO BARANG DENGAN NAMA ACAK AMAN (ANTI-DOUBLE EXTENSION) =====
         $namaGambar = null;
         $uploadedFoto = $request->file('gambar') ?? $request->file('foto');
         if ($uploadedFoto) {
-            $ext        = strtolower($uploadedFoto->extension() ?: $uploadedFoto->getClientOriginalExtension());
-            $namaGambar = time() . '_' . uniqid() . '.' . $ext;
+            $ext = strtolower($uploadedFoto->extension() ?: '');
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                $ext = 'jpg';
+            }
+            $namaGambar = 'brg_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
             $uploadDir  = public_path('uploads/barang');
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
@@ -493,8 +496,8 @@ class BarangController extends Controller
             'kondisi'      => 'required|in:Baik,Rusak Ringan,Dalam Perbaikan,Rusak Berat',
             'stok_minimum' => 'nullable|integer|min:0',
             'is_active'    => 'required|boolean',
-            'gambar'       => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'foto'         => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gambar'       => 'nullable|file|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'foto'         => 'nullable|file|image|mimes:jpeg,jpg,png,webp|max:2048',
         ], [
             'nama_barang.required' => 'Nama barang wajib diisi.',
             'id_kategori.required' => 'Kategori wajib dipilih.',
@@ -502,12 +505,12 @@ class BarangController extends Controller
             'satuan.required'      => 'Satuan wajib diisi.',
             'kondisi.required'     => 'Kondisi barang wajib dipilih.',
             'kondisi.in'           => 'Pilihan kondisi barang tidak valid.',
-            'gambar.image'         => 'File yang diunggah harus berupa gambar.',
-            'gambar.mimes'         => 'Format foto harus JPG, JPEG, PNG, atau WEBP.',
-            'gambar.max'           => 'Ukuran foto maksimal 5 MB.',
-            'foto.image'           => 'File yang diunggah harus berupa gambar.',
-            'foto.mimes'           => 'Format foto harus JPG, JPEG, PNG, atau WEBP.',
-            'foto.max'             => 'Ukuran foto maksimal 5 MB.',
+            'gambar.image'         => 'File yang diunggah harus berupa gambar asli.',
+            'gambar.mimes'         => 'Format foto harus JPEG, JPG, PNG, atau WEBP.',
+            'gambar.max'           => 'Ukuran foto maksimal 2 MB (2048 KB).',
+            'foto.image'           => 'File yang diunggah harus berupa gambar asli.',
+            'foto.mimes'           => 'Format foto harus JPEG, JPG, PNG, atau WEBP.',
+            'foto.max'             => 'Ukuran foto maksimal 2 MB (2048 KB).',
         ]);
 
         $kategoriPilih = Kategori::findOrFail($request->id_kategori);
@@ -527,13 +530,16 @@ class BarangController extends Controller
         $uploadedFoto = $request->file('gambar') ?? $request->file('foto');
         if ($uploadedFoto) {
             if ($barang->gambar) {
-                $oldPath = public_path('uploads/barang/' . $barang->gambar);
+                $oldPath = public_path('uploads/barang/' . basename($barang->gambar));
                 if (file_exists($oldPath)) {
                     @unlink($oldPath);
                 }
             }
-            $ext        = strtolower($uploadedFoto->extension() ?: $uploadedFoto->getClientOriginalExtension());
-            $namaGambar = time() . '_' . uniqid() . '.' . $ext;
+            $ext = strtolower($uploadedFoto->extension() ?: '');
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                $ext = 'jpg';
+            }
+            $namaGambar = 'brg_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
             $uploadDir  = public_path('uploads/barang');
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);

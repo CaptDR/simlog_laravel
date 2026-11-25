@@ -121,8 +121,8 @@ class BarangMasukController extends Controller
             'expire_date'    => 'nullable|date',
             'jumlah_masuk'   => 'required|integer|min:1',
             'sumber_bantuan' => 'required|string|max:100',
-            'bukti_dokumen'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'bukti_bast'     => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'bukti_dokumen'  => 'nullable|file|mimes:jpeg,jpg,png,webp,pdf|max:2048',
+            'bukti_bast'     => 'nullable|file|mimes:jpeg,jpg,png,webp,pdf|max:2048',
             'keterangan'     => 'nullable|string|max:500',
         ], [
             'id_barang.required'      => 'Nama barang wajib dipilih.',
@@ -133,17 +133,20 @@ class BarangMasukController extends Controller
             'jumlah_masuk.required'   => 'Jumlah masuk wajib diisi.',
             'jumlah_masuk.min'        => 'Jumlah masuk minimal 1.',
             'sumber_bantuan.required' => 'Sumber bantuan wajib dipilih.',
-            'bukti_dokumen.mimes'     => 'File bukti BAST hanya boleh berformat JPG, JPEG, PNG, atau PDF.',
-            'bukti_dokumen.max'       => 'Ukuran file bukti BAST maksimal 5 MB.',
-            'bukti_bast.mimes'        => 'File bukti BAST hanya boleh berformat JPG, JPEG, PNG, atau PDF.',
-            'bukti_bast.max'          => 'Ukuran file bukti BAST maksimal 5 MB.',
+            'bukti_dokumen.mimes'     => 'File bukti BAST hanya boleh berformat JPEG, JPG, PNG, WEBP, atau PDF.',
+            'bukti_dokumen.max'       => 'Ukuran file bukti BAST maksimal 2 MB (2048 KB).',
+            'bukti_bast.mimes'        => 'File bukti BAST hanya boleh berformat JPEG, JPG, PNG, WEBP, atau PDF.',
+            'bukti_bast.max'          => 'Ukuran file bukti BAST maksimal 2 MB (2048 KB).',
         ]);
 
         $namaBukti = null;
         $uploadedBast = $request->file('bukti_dokumen') ?? $request->file('bukti_bast');
         if ($uploadedBast) {
-            $ext       = strtolower($uploadedBast->extension() ?: $uploadedBast->getClientOriginalExtension());
-            $namaBukti = 'bast_' . time() . '_' . uniqid() . '.' . $ext;
+            $ext = strtolower($uploadedBast->extension() ?: '');
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'pdf'], true)) {
+                $ext = 'jpg';
+            }
+            $namaBukti = 'bast_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
             $uploadDir = public_path('uploads/barang_masuk');
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);

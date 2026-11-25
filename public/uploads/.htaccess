@@ -1,0 +1,11 @@
+# =========================================================================
+# TAMENG ANTI-WEBSHELL & EKSEKUSI SKRIP BERBAHAYA (KOMPATIBEL INFINITYFREE)
+# Catatan: Tanpa directive php_flag / php_value agar tidak memicu Error 500
+# pada server berbasis PHP-FPM / FastCGI di shared hosting InfinityFree.
+# =========================================================================
+Options -Indexes
+
+<FilesMatch "\.(php|php\.|php3|php4|php5|php7|php8|phtml|phar|pl|py|jsp|asp|aspx|htm|html|shtml|sh|cgi)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

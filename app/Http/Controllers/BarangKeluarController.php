@@ -472,6 +472,11 @@ class BarangKeluarController extends Controller
     {
         $barangKeluar = BarangKeluar::with(['details.barang', 'trc'])->findOrFail($id);
 
+        // Proteksi Anti-IDOR: Pastikan hanya Regu TRC yang ditugaskan yang dapat memproses pengiriman ini
+        if ($barangKeluar->trc_by && (int) $barangKeluar->trc_by !== (int) Auth::id()) {
+            abort(403, 'Akses ditolak: Transaksi ini ditugaskan kepada regu TRC lain.');
+        }
+
         if (in_array($barangKeluar->status, ['Ditolak', 'Dibatalkan'], true) || $barangKeluar->approval_status === 'Ditolak') {
             return redirect()->route('barang-keluar.show', $barangKeluar->id)
                 ->with('error', 'Transaksi ini telah ditolak atau dibatalkan sehingga tidak dapat dikirim.');
@@ -518,6 +523,11 @@ class BarangKeluarController extends Controller
     {
         $barangKeluar = BarangKeluar::with(['details.barang', 'trc'])->findOrFail($id);
 
+        // Proteksi Anti-IDOR: Pastikan hanya Regu TRC yang ditugaskan yang dapat menyelesaikan pengiriman ini
+        if ($barangKeluar->trc_by && (int) $barangKeluar->trc_by !== (int) Auth::id()) {
+            abort(403, 'Akses ditolak: Transaksi ini ditugaskan kepada regu TRC lain.');
+        }
+
         if ($barangKeluar->status !== 'Dalam Pengiriman') {
             return redirect()->route('barang-keluar.show', $barangKeluar->id)
                 ->with('error', "Konfirmasi serah terima hanya dapat dilakukan saat status 'Dalam Pengiriman'.");
@@ -527,22 +537,25 @@ class BarangKeluarController extends Controller
             'latitude'      => 'nullable|numeric|between:-90,90',
             'longitude'     => 'nullable|numeric|between:-180,180',
             'lokasi_aktual' => 'nullable|string|max:255',
-            'foto_bukti'    => 'required|file|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'foto'          => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'foto_bukti'    => 'required|file|image|mimes:jpeg,jpg,png,webp|max:2048',
+            'foto'          => 'nullable|file|image|mimes:jpeg,jpg,png,webp|max:2048',
         ], [
             'latitude.numeric'    => 'Koordinat Latitude harus berupa angka desimal.',
             'longitude.numeric'   => 'Koordinat Longitude harus berupa angka desimal.',
             'foto_bukti.required' => 'Foto bukti serah terima wajib diambil langsung menggunakan kamera di lokasi.',
-            'foto_bukti.image'    => 'File bukti serah terima harus berupa gambar.',
-            'foto_bukti.mimes'    => 'Format foto bukti harus JPG, JPEG, PNG, atau WEBP.',
-            'foto_bukti.max'      => 'Ukuran foto bukti maksimal 5 MB.',
+            'foto_bukti.image'    => 'File bukti serah terima harus berupa gambar asli.',
+            'foto_bukti.mimes'    => 'Format foto bukti harus JPEG, JPG, PNG, atau WEBP.',
+            'foto_bukti.max'      => 'Ukuran foto bukti maksimal 2 MB (2048 KB).',
         ]);
 
         $namaFoto = null;
         $uploadedFoto = $request->file('foto_bukti') ?? $request->file('foto');
         if ($uploadedFoto) {
-            $ext       = strtolower($uploadedFoto->extension() ?: $uploadedFoto->getClientOriginalExtension());
-            $namaFoto  = 'bukti_' . strtolower($barangKeluar->kode_transaksi) . '_' . time() . '.' . $ext;
+            $ext = strtolower($uploadedFoto->extension() ?: '');
+            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                $ext = 'jpg';
+            }
+            $namaFoto  = 'trc_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
             $uploadDir = public_path('uploads/barang_keluar');
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);

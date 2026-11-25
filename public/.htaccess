@@ -1,9 +1,24 @@
+# =========================================================================
+# 1. PROTEKSI DIREKTORI & FILE SENSITIF ROOT (KOMPATIBEL INFINITYFREE)
+# =========================================================================
+Options -Indexes
+
+# Blokir akses HTTP langsung ke semua file berawalan titik (.env, .git, .htaccess, dll)
+# serta file sistem/konfigurasi Laravel ketika di-deploy sejajar di htdocs
+<FilesMatch "(^\.|^artisan$|^composer\.(json|lock)$|^package(-lock)?\.json$|^vite\.config\.js$|^tailwind\.config\.js$|^postcss\.config\.js$|^phpunit\.xml$)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
 
     RewriteEngine On
+
+    # Blokir akses langsung ke folder internal Laravel jika berada di dalam htdocs
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/|$) - [F,L,NC]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -21,7 +36,16 @@
 </IfModule>
 
 # =========================================================================
-# KOMPRESI GZIP (mod_deflate) — Mengurangi Ukuran Transfer HTML, CSS, JS, SVG
+# 2. HTTP SECURITY HEADERS RINGAN (TANPA MEMBLOKIR GOOGLE FONTS / CDN)
+# =========================================================================
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# =========================================================================
+# 3. KOMPRESI GZIP (mod_deflate) — Mengurangi Ukuran Transfer HTML, CSS, JS, SVG
 # =========================================================================
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/plain
@@ -43,7 +67,7 @@
 </IfModule>
 
 # =========================================================================
-# BROWSER CACHING (mod_expires & mod_headers) — Optimasi Cache Lifetimes
+# 4. BROWSER CACHING (mod_expires & mod_headers) — Optimasi Cache Lifetimes
 # =========================================================================
 <IfModule mod_expires.c>
     ExpiresActive On

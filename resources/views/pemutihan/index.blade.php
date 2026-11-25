@@ -381,6 +381,15 @@
 
 @push('scripts')
     <script>
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function openApprovalModal(actionType, actionUrl, kode, namaBarang, jumlah) {
             const modal = document.getElementById('approvalModal');
             const form = document.getElementById('approvalForm');
@@ -388,16 +397,19 @@
             const desc = document.getElementById('modalDescription');
             const submitBtn = document.getElementById('modalSubmitBtn');
 
+            const safeNama = escapeHtml(namaBarang);
+            const safeJumlah = escapeHtml(jumlah);
+
             form.action = actionUrl;
 
             if (actionType === 'approve') {
                 title.textContent = 'Setujui Pemutihan [' + kode + ']';
-                desc.innerHTML = 'Apakah Anda yakin menyetujui pemutihan <strong>' + namaBarang + '</strong> sejumlah <strong>' + jumlah + '</strong>? Stok barang di gudang akan langsung dikurangi secara permanen.';
+                desc.innerHTML = 'Apakah Anda yakin menyetujui pemutihan <strong>' + safeNama + '</strong> sejumlah <strong>' + safeJumlah + '</strong>? Stok barang di gudang akan langsung dikurangi secara permanen.';
                 submitBtn.textContent = 'Ya, Setujui & Kurangi Stok';
                 submitBtn.className = 'px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md transition-colors';
             } else {
                 title.textContent = 'Tolak Pemutihan [' + kode + ']';
-                desc.innerHTML = 'Apakah Anda yakin menolak pengajuan pemutihan <strong>' + namaBarang + '</strong> sejumlah <strong>' + jumlah + '</strong>? Stok gudang tidak akan dikurangi.';
+                desc.innerHTML = 'Apakah Anda yakin menolak pengajuan pemutihan <strong>' + safeNama + '</strong> sejumlah <strong>' + safeJumlah + '</strong>? Stok gudang tidak akan dikurangi.';
                 submitBtn.textContent = 'Ya, Tolak Pengajuan';
                 submitBtn.className = 'px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-md transition-colors';
             }

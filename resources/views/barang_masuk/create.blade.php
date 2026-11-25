@@ -243,7 +243,7 @@
                     </div>
                     <p class="mt-1 font-body-sm text-body-sm text-secondary flex items-center gap-1">
                         <span class="material-symbols-outlined text-[14px]">info</span>
-                        Format: JPG, JPEG, PNG, PDF. Maksimal 5 MB.
+                        Format: JPG, JPEG, PNG, WEBP, PDF. Maksimal 2 MB.
                     </p>
                 </div>
 

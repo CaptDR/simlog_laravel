@@ -194,7 +194,7 @@
                 <!-- 7. Upload Foto Barang dengan Pratinjau -->
                 <div class="md:col-span-2">
                     <label for="gambar" class="form-label">
-                        Foto Barang <span class="text-secondary font-normal normal-case">(Opsional — JPG, JPEG, PNG, WEBP maks. 5 MB)</span>
+                        Foto Barang <span class="text-secondary font-normal normal-case">(Opsional — JPG, JPEG, PNG, WEBP maks. 2 MB)</span>
                     </label>
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <div id="preview-wrapper" class="w-20 h-20 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
