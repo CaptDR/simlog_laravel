@@ -108,8 +108,8 @@
             <a href="{{ Route::has('dashboard') ? route('dashboard') : url('/dashboard') }}"
                class="flex items-center gap-3 group"
                title="SIMLOG BPBD Kota Cirebon">
-                <div class="w-10 h-10 rounded-xl bg-[#EA580C] flex items-center justify-center text-white font-black text-base shadow-lg shadow-orange-600/30 group-hover:scale-105 transition-transform shrink-0">
-                    <span class="material-symbols-outlined text-[22px]">local_shipping</span>
+                <div class="flex items-center justify-center text-white font-black text-base shadow-lg group-hover:scale-105 transition-transform shrink-0 overflow-hidden">
+                    <img src="{{ asset('images/logo-bpbd.png') }}" alt="Logo BPBD Kota Cirebon" width="40" height="40" class="w-10 h-10 object-contain"/>
                 </div>
                 <div class="sidebar-brand-text flex flex-col overflow-hidden">
                     <div class="flex items-center gap-1.5">

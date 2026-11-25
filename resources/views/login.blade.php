@@ -64,8 +64,8 @@
         <!-- Bagian Atas Panel Kiri: Identitas Instansi & Status Posko -->
         <div class="relative z-20 flex flex-wrap items-center justify-between gap-4">
             <div class="inline-flex items-center gap-3 bg-slate-800/90 border border-white/15 px-4 py-2 rounded-full">
-                <span class="w-8 h-8 rounded-full bg-[#EA580C] flex items-center justify-center shadow-md shadow-orange-600/30">
-                    <span class="material-symbols-outlined text-white text-[18px]">shield</span>
+                <span class="w-8 h-8 rounded-full bg-[#EA580C] flex items-center justify-center shadow-md shadow-orange-600/30 overflow-hidden">
+                    <img src="{{ asset('images/logo-bpbd.png') }}" alt="Logo BPBD Kota Cirebon" width="32" height="32" class="w-8 h-8 object-contain">
                 </span>
                 <span class="text-xs sm:text-sm font-extrabold tracking-wider uppercase text-white">
                     BPBD KOTA CIREBON
@@ -138,7 +138,7 @@
         <!-- Bagian Bawah Panel Kiri: Info Instansi -->
         <div class="relative z-20 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-slate-400">
             <span>Badan Penanggulangan Bencana Daerah Kota Cirebon</span>
-            <span class="font-mono text-slate-400/80">Jl. Pengampon No. 31, Kota Cirebon</span>
+            <span class="font-mono text-slate-400/80">Jl. Citra Remaja No.17A, Pekiringan, Kec. Kesambi, Kota Cirebon, Jawa Barat 45153</span>
         </div>
     </div>
 
@@ -150,8 +150,8 @@
         <!-- Top Accent Bar Mobile / Info -->
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-[#0F172A] flex items-center justify-center text-[#EA580C] font-black text-sm shadow-sm">
-                    <span class="material-symbols-outlined text-[20px]">warehouse</span>
+                <div class="flex items-center justify-center text-[#EA580C] font-black text-sm overflow-hidden">
+                    <img src="{{ asset('images/logo-bpbd.png') }}" alt="Logo BPBD Kota Cirebon" width="36" height="36" class="w-9 h-9 object-contain">
                 </div>
                 <div>
                     <span class="text-xs font-extrabold uppercase tracking-wider text-slate-900 block">Portal Personel</span>

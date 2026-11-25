@@ -97,14 +97,7 @@
         <header class="relative flex items-center justify-between pb-1">
             <!-- Logo BPBD Resmi (Kiri) -->
             <div class="w-24 shrink-0 flex items-center justify-center">
-                <div class="w-20 h-20 rounded-full border-2 border-orange-500 bg-orange-50 flex flex-col items-center justify-center p-1 text-center shadow-sm">
-                    <svg viewBox="0 0 100 100" class="w-12 h-12">
-                        <!-- Segitiga Biru khas BPBD di atas lingkaran oranye -->
-                        <polygon points="50,15 85,78 15,78" fill="#1e40af" stroke="#ffffff" stroke-width="3"/>
-                        <circle cx="50" cy="55" r="8" fill="#f97316"/>
-                    </svg>
-                    <span class="text-[9px] font-black tracking-tighter text-orange-700 uppercase leading-none mt-0.5">BPBD</span>
-                </div>
+                <img src="{{ asset('images/logo-bpbd.png') }}" alt="Logo BPBD Kota Cirebon" width="80" height="80" class="w-20 h-20 object-contain"/>
             </div>
             <!-- Teks Kop Kedinasan (Tengah Atas) -->
             <div class="text-center flex-1 px-3">
@@ -113,7 +106,7 @@
                     BADAN PENANGGULANGAN BENCANA DAERAH
                 </h1>
                 <p class="text-xs text-black leading-tight mt-0.5">
-                    Jl. Dr. Sudarsono No. 40, Kesambi, Kec. Kesambi, Kota Cirebon, Jawa Barat 45134
+                    Jl. Citra Remaja No.17A, Pekiringan, Kec. Kesambi, Kota Cirebon, Jawa Barat 45153
                 </p>
                 <p class="text-[11px] text-gray-800 leading-tight">
                     Telp / Fax Posko: (0231) 203890 | Call Center TRC: 112 | Email: bpbd@cirebonkota.go.id
