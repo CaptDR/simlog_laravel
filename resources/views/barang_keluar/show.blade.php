@@ -1211,7 +1211,7 @@
         modal.classList.remove('flex');
     }
 
-    // Preview foto kamera langsung sebelum disubmit oleh petugas TRC
+    // Preview & Auto-Compress foto kamera langsung sebelum disubmit oleh petugas TRC
     function previewCameraPhoto(input) {
         const wrapper     = document.getElementById('cameraPreviewWrapper');
         const img         = document.getElementById('cameraPreviewImg');
@@ -1220,16 +1220,40 @@
         const btnText     = document.getElementById('cameraBtnText');
 
         if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                img.src = e.target.result;
+            if (fileNameTxt) {
                 wrapper.classList.remove('hidden');
                 placeholder.classList.add('hidden');
-                fileNameTxt.textContent = `Foto kamera siap diunggah: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
-                btnText.textContent = 'Ambil Ulang Foto dari Kamera';
+                fileNameTxt.textContent = 'Mengoptimalkan ukuran foto kamera...';
+            }
+
+            const processPreview = function (finalFile, origSize) {
+                const activeFile = finalFile || (input.files ? input.files[0] : null);
+                if (!activeFile) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+                    wrapper.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+
+                    const finalMb = (activeFile.size / 1024 / 1024).toFixed(2);
+                    const origMb  = ((origSize || activeFile.size) / 1024 / 1024).toFixed(2);
+
+                    if (origSize && origSize > activeFile.size + (50 * 1024)) {
+                        fileNameTxt.textContent = `Foto kamera siap diunggah: ${activeFile.name} (Dikompres otomatis: ${origMb} MB → ${finalMb} MB)`;
+                    } else {
+                        fileNameTxt.textContent = `Foto kamera siap diunggah: ${activeFile.name} (${finalMb} MB)`;
+                    }
+                    btnText.textContent = 'Ambil Ulang Foto dari Kamera';
+                };
+                reader.readAsDataURL(activeFile);
             };
-            reader.readAsDataURL(file);
+
+            if (typeof window.simlogCompressImageInput === 'function') {
+                window.simlogCompressImageInput(input, processPreview);
+            } else {
+                processPreview(input.files[0], input.files[0].size);
+            }
         }
     }
 

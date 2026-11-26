@@ -452,6 +452,142 @@
 
             syncDesktopIcon();
         })();
+
+        // Client-Side Image Auto-Compressor (HTML5 Canvas)
+        // Otomatis menyusutkan foto kamera HP (>5MB) menjadi <500KB beresolusi HD (maks 1600px)
+        // agar selalu lolos validasi server max:2048 (2 MB) dan cepat diunggah di jaringan lapangan.
+        window.simlogCompressImageInput = function (input, onDone) {
+            if (!input || !input.files || !input.files[0]) {
+                if (typeof onDone === 'function') onDone(null, 0);
+                return;
+            }
+
+            const file = input.files[0];
+            const originalSize = file.size;
+
+            // Lewati jika bukan gambar (misal PDF atau Excel) atau sudah dikompres
+            if (file._simlogCompressed || !file.type || !file.type.startsWith('image/')) {
+                if (typeof onDone === 'function') onDone(file, originalSize);
+                return;
+            }
+
+            // Jika gambar sudah berukuran kecil (<= 1.2 MB) dan bukan dari capture kamera langsung, tidak perlu kompres ulang
+            const isCameraInput = input.hasAttribute('capture') || input.id === 'foto_bukti';
+            if (!isCameraInput && originalSize <= 1200 * 1024) {
+                if (typeof onDone === 'function') onDone(file, originalSize);
+                return;
+            }
+
+            const form = input.closest('form');
+            const submitBtns = form ? Array.from(form.querySelectorAll('button[type="submit"], input[type="submit"]')) : [];
+            submitBtns.forEach(function (btn) {
+                btn.disabled = true;
+                btn.setAttribute('data-compressing', '1');
+            });
+
+            function restoreButtons() {
+                submitBtns.forEach(function (btn) {
+                    if (btn.getAttribute('data-compressing') === '1') {
+                        btn.disabled = false;
+                        btn.removeAttribute('data-compressing');
+                    }
+                });
+            }
+
+            const objectUrl = URL.createObjectURL(file);
+            const img = new Image();
+
+            img.onload = function () {
+                URL.revokeObjectURL(objectUrl);
+
+                function renderPass(maxDim, quality, callback) {
+                    let width = img.naturalWidth || img.width;
+                    let height = img.naturalHeight || img.height;
+
+                    if (width > maxDim || height > maxDim) {
+                        if (width >= height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(function (blob) {
+                        callback(blob);
+                    }, 'image/jpeg', quality);
+                }
+
+                // Pass 1: Resolusi HD maks 1600px, kualitas 0.80
+                renderPass(1600, 0.80, function (blob1) {
+                    if (!blob1) {
+                        restoreButtons();
+                        if (typeof onDone === 'function') onDone(file, originalSize);
+                        return;
+                    }
+
+                    function finalizeBlob(finalBlob) {
+                        try {
+                            const baseName = (file.name || 'foto_kamera').replace(/\.[^/.]+$/, '');
+                            const compressedFile = new File([finalBlob], baseName + '.jpg', {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            compressedFile._simlogCompressed = true;
+                            compressedFile._originalSize = originalSize;
+
+                            if (typeof DataTransfer !== 'undefined') {
+                                const dt = new DataTransfer();
+                                dt.items.add(compressedFile);
+                                input.files = dt.files;
+                            }
+
+                            restoreButtons();
+                            if (typeof onDone === 'function') onDone(compressedFile, originalSize);
+                        } catch (err) {
+                            restoreButtons();
+                            if (typeof onDone === 'function') onDone(file, originalSize);
+                        }
+                    }
+
+                    // Jika masih > 1.8 MB, lakukan Pass 2 (1280px, kualitas 0.68) agar dijamin < 2 MB
+                    if (blob1.size > 1800 * 1024) {
+                        renderPass(1280, 0.68, function (blob2) {
+                            finalizeBlob(blob2 || blob1);
+                        });
+                    } else {
+                        finalizeBlob(blob1);
+                    }
+                });
+            };
+
+            img.onerror = function () {
+                URL.revokeObjectURL(objectUrl);
+                restoreButtons();
+                if (typeof onDone === 'function') onDone(file, originalSize);
+            };
+
+            img.src = objectUrl;
+        };
+
+        // Listener global untuk semua input file gambar di form Master Barang, Barang Masuk, dan Pemutihan
+        document.addEventListener('change', function (e) {
+            const target = e.target;
+            if (!target || target.tagName !== 'INPUT' || target.type !== 'file') return;
+            if (target.id === 'foto_bukti') return; // Ditangani langsung oleh previewCameraPhoto di halaman TRC
+            if (target.files && target.files[0] && target.files[0].type && target.files[0].type.startsWith('image/')) {
+                window.simlogCompressImageInput(target);
+            }
+        });
     </script>
     @stack('scripts')
 </body>
